@@ -1,0 +1,31 @@
+Get http://localhost:4000/
+###
+Post http://localhost:4000/api/register
+Content-Type: application/json
+
+{
+    "email": "3333123",
+    "password": "12e21a",
+    "username": "t324",
+    "fullname": "Tran Duc Vu",
+    "gender": "Male"
+}
+###
+Post http://localhost:4000/api/login
+Content-Type: application/json
+
+{
+    "email": "trana2@gmail.com",
+    "password": "1221a"
+}
+
+###
+GET http://localhost:4000/api/users
+
+###
+Post http://localhost:4000/api/refresh_token
+###
+GET http://localhost:4000/api/access_token
+
+###
+Post http://localhost:4000/api/logout
