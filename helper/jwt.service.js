@@ -33,7 +33,8 @@ module.exports = {
     verifyAccessToken: async (req, res, next) => {
         try {
             const accessToken = req.cookies.accessToken;
-            if (!accessToken) throw createError.Unauthorized();
+            if (!accessToken)
+                throw createError.Unauthorized('You are not logged in');
             jwt.verify(accessToken, ACCESS_TOKEN_SECRET, (err, data) => {
                 if (err) {
                     throw createError.Forbidden();
@@ -48,7 +49,8 @@ module.exports = {
     verifyRefreshToken: async (req, res, next) => {
         try {
             const refreshToken = req.cookies.refreshToken;
-            if (!refreshToken) throw createError.Unauthorized();
+            if (!refreshToken)
+                throw createError.Unauthorized('You are not logged in');
             jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, data) => {
                 if (err) {
                     throw createError.Forbidden();

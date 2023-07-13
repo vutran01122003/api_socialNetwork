@@ -17,6 +17,6 @@ router.get(
     jwtService.verifyAccessToken,
     authRouter.accessToken
 );
-router.post('/logout', jwtService.verifyAccessToken, authRouter.logout);
+router.get('/logout', jwtService.verifyRefreshToken, authRouter.logout);
 
 module.exports = router;

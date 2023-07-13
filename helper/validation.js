@@ -3,7 +3,6 @@ const createError = require('http-errors');
 
 module.exports = async (user) => {
     try {
-        console.log(user);
         const schema = Joi.object({
             username: Joi.string().alphanum().min(3).max(30).required(),
             password: Joi.string().min(5).max(20).required(),

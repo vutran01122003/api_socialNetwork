@@ -28,4 +28,17 @@ Post http://localhost:4000/api/refresh_token
 GET http://localhost:4000/api/access_token
 
 ###
-Post http://localhost:4000/api/logout
+Get http://localhost:4000/api/logout
+
+###
+Post http://localhost:4000/api/user 
+Content-Type: application/json
+
+{
+    "searchValue": "tran"
+}
+
+
+###
+Get http://localhost:4000/api/user/64a3ddae4a25ed34ebbf0da6
+

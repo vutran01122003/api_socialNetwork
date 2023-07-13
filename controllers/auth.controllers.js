@@ -34,7 +34,7 @@ module.exports = {
             res.status(200)
                 .cookie('accessToken', accessToken, {
                     httpOnly: 'true',
-                    maxAge: 5 * 60 * 1000
+                    maxAge: 30 * 60 * 1000
                 })
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: 'true',
@@ -72,7 +72,7 @@ module.exports = {
             res.status(200)
                 .cookie('accessToken', accessToken, {
                     httpOnly: 'true',
-                    maxAge: 5 * 60 * 1000
+                    maxAge: 30 * 60 * 1000
                 })
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: 'true',
@@ -138,6 +138,8 @@ module.exports = {
         }
     },
     logout: async (req, res) => {
-        res.clearCookie('accessToken').send('logout');
+        res.clearCookie('accessToken')
+            .clearCookie('refreshToken')
+            .send('success logout');
     }
 };
