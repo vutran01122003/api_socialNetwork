@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 var cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -10,11 +11,12 @@ const options = { origin: process.env.DOMAIN_CLIENT, credentials: true };
 
 app.use(cors(options));
 app.use(express.json());
+app.use(fileUpload({ limits: { fileSize: 1024 * 1024 } }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/api', authRouter);
-app.use('/api', require('./routes/user.router'));
+app.use('/api', userRouter);
 
 app.get('/', (req, res) => {
     res.json({ msg: 'Hello' });

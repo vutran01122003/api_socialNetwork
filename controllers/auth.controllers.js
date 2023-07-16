@@ -9,11 +9,14 @@ module.exports = {
             const { email, password, username, fullname, gender } = req.body;
             const checkEmail = await User.findOne({ email });
             const checkUsername = await User.findOne({ username });
+
             if (!email || !password)
                 throw createError.BadRequest('empty email or password');
-            if (checkEmail || checkUsername)
-                throw createError.Conflict('account was exists');
-            await validation(req.body);
+            if (checkEmail) throw createError.Conflict('email was exists');
+            if (checkUsername)
+                throw createError.Conflict('username was exists');
+
+            await validation.registerValidation(req.body);
             const userCreated = new User({
                 email,
                 password,
@@ -49,6 +52,7 @@ module.exports = {
                     }
                 });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
@@ -87,6 +91,7 @@ module.exports = {
                     }
                 });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
