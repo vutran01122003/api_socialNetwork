@@ -60,7 +60,9 @@ module.exports = {
         try {
             const { email, password } = req.body;
 
-            const user = await User.findOne({ email });
+            const user = await User.findOne({ email })
+                .populate(['followers', 'following'])
+                .exec();
             if (!email || !password)
                 throw createError.BadRequest('empty email or password');
             if (!user) throw createError.NotFound('email does not exists');
@@ -98,7 +100,9 @@ module.exports = {
     refreshToken: async (req, res, next) => {
         try {
             const id = res.locals.userId;
-            const user = await User.findOne({ _id: id });
+            const user = await User.findOne({ _id: id })
+                .select('-password')
+                .exec();
             const accessToken = await jwtService.signAccessToken(id);
             const refreshToken = await jwtService.signRefreshToken(id);
 
@@ -129,7 +133,9 @@ module.exports = {
             const accessToken = req.cookies.accessToken;
             const refreshToken = req.cookies.refreshToken;
 
-            const user = await User.findOne({ _id: id });
+            const user = await User.findOne({ _id: id })
+                .select('-password')
+                .exec();
             if (!user) throw createError.NotFound('user not exists');
             return res.status(200).send({
                 user,

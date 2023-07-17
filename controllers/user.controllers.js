@@ -29,11 +29,14 @@ module.exports = {
             if (!ObjectId.isValid(id))
                 throw createError.NotFound('user not found');
 
-            const user = await User.findOne({ _id: id });
+            const user = await User.findOne({ _id: id })
+                .populate('followers following', 'fullname username avatar')
+                .exec();
             if (!user) throw createError.NotFound('user not found');
 
             res.status(200).send({ user });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
@@ -52,9 +55,11 @@ module.exports = {
                 // Check check variable has value or null
                 throw createError.Conflict('username already exists');
 
+            // Check User edit profile or follow-unfollow
             await validation.editProfileValidation(userData);
 
-            if (Object.keys(req.files).length > 0) {
+            // Check User Upload Image Avatar
+            if (req.files) {
                 const coverFile = req.files.cover;
                 const coverDataBase64 = req.files.cover.data.toString('base64');
                 const cover = await cloudinary.uploader.upload(
@@ -69,12 +74,62 @@ module.exports = {
             const updatedUser = await User.findByIdAndUpdate(id, userData, {
                 new: true
             });
+
             res.status(200).send({
                 status: 'update user success',
                 user: updatedUser
             });
         } catch (error) {
-            console.log(error);
+            next(error);
+        }
+    },
+    follow: async (req, res, next) => {
+        try {
+            const userId = req.params.id;
+            const authId = req.body.authId;
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { $push: { followers: authId } },
+                { new: true }
+            );
+
+            const updatedAuthUser = await User.findByIdAndUpdate(
+                authId,
+                { $push: { following: userId } },
+                { new: true }
+            );
+
+            res.status(200).send({
+                user: updatedUser,
+                authUser: updatedAuthUser
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    unfollow: async (req, res, next) => {
+        try {
+            const userId = req.params.id;
+            const authId = req.body.authId;
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { $pull: { followers: authId } },
+                { new: true }
+            );
+
+            const updatedAuthUser = await User.findByIdAndUpdate(
+                authId,
+                { $pull: { following: userId } },
+                { new: true }
+            );
+
+            res.status(200).send({
+                user: updatedUser,
+                authUser: updatedAuthUser
+            });
+        } catch (error) {
             next(error);
         }
     }
