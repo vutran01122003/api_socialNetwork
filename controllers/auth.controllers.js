@@ -61,7 +61,10 @@ module.exports = {
             const { email, password } = req.body;
 
             const user = await User.findOne({ email })
-                .populate(['followers', 'following'])
+                .populate(
+                    'followers following',
+                    'avatar username fullname followers following'
+                )
                 .exec();
             if (!email || !password)
                 throw createError.BadRequest('empty email or password');
@@ -101,6 +104,10 @@ module.exports = {
         try {
             const id = res.locals.userId;
             const user = await User.findOne({ _id: id })
+                .populate(
+                    'followers following',
+                    'avatar username fullname followers following'
+                )
                 .select('-password')
                 .exec();
             const accessToken = await jwtService.signAccessToken(id);
@@ -134,6 +141,10 @@ module.exports = {
             const refreshToken = req.cookies.refreshToken;
 
             const user = await User.findOne({ _id: id })
+                .populate(
+                    'followers following',
+                    'avatar username fullname followers following'
+                )
                 .select('-password')
                 .exec();
             if (!user) throw createError.NotFound('user not exists');

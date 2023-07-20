@@ -65,7 +65,7 @@ module.exports = {
                 const cover = await cloudinary.uploader.upload(
                     `data:${coverFile.mimetype};base64,${coverDataBase64}`,
                     {
-                        folder: 'test'
+                        folder: 'avatar'
                     }
                 );
                 userData.avatar = cover.secure_url;
@@ -92,12 +92,18 @@ module.exports = {
                 userId,
                 { $push: { followers: authId } },
                 { new: true }
+            ).populate(
+                'followers following',
+                'avatar username fullname followers following'
             );
 
             const updatedAuthUser = await User.findByIdAndUpdate(
                 authId,
                 { $push: { following: userId } },
                 { new: true }
+            ).populate(
+                'followers following',
+                'avatar username fullname followers following'
             );
 
             res.status(200).send({
@@ -117,12 +123,18 @@ module.exports = {
                 userId,
                 { $pull: { followers: authId } },
                 { new: true }
+            ).populate(
+                'followers following',
+                'avatar username fullname followers following'
             );
 
             const updatedAuthUser = await User.findByIdAndUpdate(
                 authId,
                 { $pull: { following: userId } },
                 { new: true }
+            ).populate(
+                'followers following',
+                'avatar username fullname followers following'
             );
 
             res.status(200).send({
