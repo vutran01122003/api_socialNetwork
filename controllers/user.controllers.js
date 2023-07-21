@@ -45,6 +45,7 @@ module.exports = {
         try {
             const { id } = req.params;
             const userData = req.body;
+            console.log(userData);
 
             if (!ObjectId.isValid(id))
                 throw createError.NotFound('user not found');
@@ -55,21 +56,7 @@ module.exports = {
                 // Check check variable has value or null
                 throw createError.Conflict('username already exists');
 
-            // Check User edit profile or follow-unfollow
             await validation.editProfileValidation(userData);
-
-            // Check User Upload Image Avatar
-            if (req.files) {
-                const coverFile = req.files.cover;
-                const coverDataBase64 = req.files.cover.data.toString('base64');
-                const cover = await cloudinary.uploader.upload(
-                    `data:${coverFile.mimetype};base64,${coverDataBase64}`,
-                    {
-                        folder: 'avatar'
-                    }
-                );
-                userData.avatar = cover.secure_url;
-            }
 
             const updatedUser = await User.findByIdAndUpdate(id, userData, {
                 new: true

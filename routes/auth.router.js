@@ -14,7 +14,7 @@ router.post(
 
 router.get(
     '/access_token',
-    jwtService.verifyAccessToken,
+    jwtService.verifyRefreshToken,
     authRouter.accessToken
 );
 

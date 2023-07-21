@@ -32,7 +32,7 @@ module.exports = {
                 story: Joi.string().min(0).max(200).required(),
                 website: Joi.string().uri().required().allow(''),
                 gender: Joi.string().required(),
-                cover: Joi.string().allow('')
+                avatar: Joi.string()
             });
 
             const { error } = await schema.validate(user);
