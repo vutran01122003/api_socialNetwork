@@ -2,7 +2,6 @@ const validation = require('../helper/validation');
 const User = require('../models/User');
 const createError = require('http-errors');
 const ObjectId = require('mongoose').Types.ObjectId;
-const cloudinary = require('../utils/couldinary');
 
 module.exports = {
     searchUser: async (req, res) => {
@@ -45,7 +44,6 @@ module.exports = {
         try {
             const { id } = req.params;
             const userData = req.body;
-            console.log(userData);
 
             if (!ObjectId.isValid(id))
                 throw createError.NotFound('user not found');

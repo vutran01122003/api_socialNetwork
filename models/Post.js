@@ -17,7 +17,7 @@ const PostSchema = new Schema(
             default: []
         },
         likes: {
-            type: [{ type: mongoose.Types.ObjectId }],
+            type: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
             default: []
         },
         user: { type: mongoose.Types.ObjectId, ref: 'user' }
