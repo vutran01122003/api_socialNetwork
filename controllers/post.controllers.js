@@ -33,6 +33,7 @@ module.exports = {
                 .populate('user likes', 'fullname username avatar')
                 .populate({
                     path: 'comments',
+                    options: { sort: { createdAt: -1 } },
                     populate: [
                         {
                             path: 'user',
@@ -43,6 +44,24 @@ module.exports = {
                             path: 'likes',
                             model: 'user',
                             select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'reply',
+                            model: 'comment',
+                            options: { sort: { createdAt: -1 } },
+                            select: 'user content likes createdAt',
+                            populate: [
+                                {
+                                    path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'likes',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                }
+                            ]
                         }
                     ]
                 });
@@ -69,6 +88,7 @@ module.exports = {
                 .populate('user likes', 'fullname username avatar')
                 .populate({
                     path: 'comments',
+                    options: { sort: { createdAt: -1 } },
                     populate: [
                         {
                             path: 'user',
@@ -79,6 +99,24 @@ module.exports = {
                             path: 'likes',
                             model: 'user',
                             select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'reply',
+                            model: 'comment',
+                            options: { sort: { createdAt: -1 } },
+                            select: 'user content likes createdAt',
+                            populate: [
+                                {
+                                    path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'likes',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                }
+                            ]
                         }
                     ]
                 });
@@ -121,6 +159,7 @@ module.exports = {
                 .populate('likes user', 'avatar username fullname')
                 .populate({
                     path: 'comments',
+                    options: { sort: { createdAt: -1 } },
                     populate: [
                         {
                             path: 'user',
@@ -131,6 +170,24 @@ module.exports = {
                             path: 'likes',
                             model: 'user',
                             select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'reply',
+                            model: 'comment',
+                            options: { sort: { createdAt: -1 } },
+                            select: 'user content likes createdAt',
+                            populate: [
+                                {
+                                    path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'likes',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                }
+                            ]
                         }
                     ]
                 });
@@ -158,6 +215,7 @@ module.exports = {
                 .populate('likes user', 'avatar username fullname')
                 .populate({
                     path: 'comments',
+                    options: { sort: { createdAt: -1 } },
                     populate: [
                         {
                             path: 'user',
@@ -168,6 +226,24 @@ module.exports = {
                             path: 'likes',
                             model: 'user',
                             select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'reply',
+                            model: 'comment',
+                            options: { sort: { createdAt: -1 } },
+                            select: 'user content likes createdAt',
+                            populate: [
+                                {
+                                    path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'likes',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                }
+                            ]
                         }
                     ]
                 });
