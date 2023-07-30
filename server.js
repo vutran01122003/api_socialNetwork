@@ -5,11 +5,13 @@ const fileUpload = require('express-fileupload');
 var cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 4000;
+const client = require('./helper/connection.redis');
 const authRouter = require('./routes/auth.router');
 const userRouter = require('./routes/user.router');
 const postRouter = require('./routes/post.router');
 const commentRouter = require('./routes/comment.router');
 
+client.set('username', 'vutran');
 const options = { origin: process.env.DOMAIN_CLIENT, credentials: true };
 
 app.use(cors(options));

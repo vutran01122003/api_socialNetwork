@@ -6,7 +6,6 @@ module.exports = {
         try {
             const { postId, commentId, ...commentData } = req.body.commentData;
             const createdComment = await Comment.create(commentData);
-            console.log(createdComment);
             let updatedPost = null;
             if (commentId) {
                 await Comment.findByIdAndUpdate(commentId, {
@@ -71,6 +70,24 @@ module.exports = {
                                 path: 'likes',
                                 model: 'user',
                                 select: 'username fullname avatar'
+                            },
+                            {
+                                path: 'reply',
+                                model: 'comment',
+                                options: { sort: { createdAt: -1 } },
+                                select: 'user content likes createdAt',
+                                populate: [
+                                    {
+                                        path: 'user',
+                                        model: 'user',
+                                        select: 'username fullname avatar'
+                                    },
+                                    {
+                                        path: 'likes',
+                                        model: 'user',
+                                        select: 'username fullname avatar'
+                                    }
+                                ]
                             }
                         ]
                     });

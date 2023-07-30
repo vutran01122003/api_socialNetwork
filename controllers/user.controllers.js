@@ -29,6 +29,7 @@ module.exports = {
                 throw createError.NotFound('user not found');
 
             const user = await User.findOne({ _id: id })
+                .select('-password')
                 .populate('followers following', 'fullname username avatar')
                 .exec();
             if (!user) throw createError.NotFound('user not found');
@@ -58,7 +59,7 @@ module.exports = {
 
             const updatedUser = await User.findByIdAndUpdate(id, userData, {
                 new: true
-            });
+            }).select('-password');
 
             res.status(200).send({
                 status: 'update user success',
@@ -77,10 +78,12 @@ module.exports = {
                 userId,
                 { $push: { followers: authId } },
                 { new: true }
-            ).populate(
-                'followers following',
-                'avatar username fullname followers following'
-            );
+            )
+                .select('-password')
+                .populate(
+                    'followers following',
+                    'avatar username fullname followers following'
+                );
 
             const updatedAuthUser = await User.findByIdAndUpdate(
                 authId,
@@ -108,10 +111,12 @@ module.exports = {
                 userId,
                 { $pull: { followers: authId } },
                 { new: true }
-            ).populate(
-                'followers following',
-                'avatar username fullname followers following'
-            );
+            )
+                .select('-password')
+                .populate(
+                    'followers following',
+                    'avatar username fullname followers following'
+                );
 
             const updatedAuthUser = await User.findByIdAndUpdate(
                 authId,

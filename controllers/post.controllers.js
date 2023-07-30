@@ -9,19 +9,21 @@ module.exports = {
             if (!id) throw createError.NotFound('user not found');
 
             const postData = req.body.postData;
-            const createdPost = await Post.create({
-                ...postData
-            });
+
+            const createdPost = new Post(postData);
+            createdPost.populate('user', 'fullname username avatar');
+            await createdPost.save();
 
             res.status(200).send({
                 status: 'post created successfully',
                 postData: createdPost
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
-    getPost: async (req, res, next) => {
+    getPosts: async (req, res, next) => {
         try {
             const id = req.params.id;
 
@@ -67,7 +69,61 @@ module.exports = {
                 });
 
             res.send({
-                status: 'successful post',
+                status: 'get posts successfully',
+                posts,
+                result: posts.length
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getUserPosts: async (req, res, next) => {
+        try {
+            const id = req.params.id;
+
+            const posts = await Post.find({
+                user: id
+            })
+                .sort({ createdAt: -1 })
+                .populate('user likes', 'fullname username avatar')
+                .populate({
+                    path: 'comments',
+                    options: { sort: { createdAt: -1 } },
+                    populate: [
+                        {
+                            path: 'user',
+                            model: 'user',
+                            select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'likes',
+                            model: 'user',
+                            select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'reply',
+                            model: 'comment',
+                            options: { sort: { createdAt: -1 } },
+                            select: 'user content likes createdAt',
+                            populate: [
+                                {
+                                    path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'likes',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                }
+                            ]
+                        }
+                    ]
+                });
+
+            res.send({
+                status: 'get user posts successfully',
                 posts,
                 result: posts.length
             });

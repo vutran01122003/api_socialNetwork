@@ -2,7 +2,6 @@ const User = require('../models/User');
 const createError = require('http-errors');
 const validation = require('../helper/validation');
 const jwtService = require('../helper/jwt.service');
-const Post = require('../models/Post');
 
 module.exports = {
     register: async (req, res, next) => {
