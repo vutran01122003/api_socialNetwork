@@ -26,7 +26,7 @@ app.use('/api', postRouter);
 app.use('/api', commentRouter);
 
 app.get('/', (req, res) => {
-    res.json({ msg: 'Hello' });
+    res.status(200).send('hello');
 });
 
 app.use((req, res, next) => {
@@ -40,7 +40,8 @@ app.use((err, req, res, next) => {
     if (err) {
         res.status(err.status).send({
             status: err.status,
-            msg: err.message
+            msg: err.message,
+            code: err?.code
         });
     }
 });

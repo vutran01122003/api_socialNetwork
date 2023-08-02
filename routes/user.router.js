@@ -1,14 +1,19 @@
 const router = require('express').Router();
-const userRouter = require('../controllers/user.controllers');
+const userCtrl = require('../controllers/user.controllers');
+const jwtService = require('../helper/jwt.service');
 
-router.post('/user', userRouter.searchUser);
+router.post('/user', jwtService.verifyAccessToken, userCtrl.searchUser);
 
-router.get('/user/:id', userRouter.getUser);
+router.get('/user/:id', jwtService.verifyAccessToken, userCtrl.getUser);
 
-router.patch('/user/:id', userRouter.updateUser);
+router.patch('/user/:id', jwtService.verifyAccessToken, userCtrl.updateUser);
 
-router.patch('/user/:id/follow', userRouter.follow);
+router.patch('/user/:id/follow', jwtService.verifyAccessToken, userCtrl.follow);
 
-router.patch('/user/:id/unfollow', userRouter.unfollow);
+router.patch(
+    '/user/:id/unfollow',
+    jwtService.verifyAccessToken,
+    userCtrl.unfollow
+);
 
 module.exports = router;

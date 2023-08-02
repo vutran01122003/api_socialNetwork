@@ -36,12 +36,10 @@ module.exports = {
 
             res.status(200)
                 .cookie('accessToken', accessToken, {
-                    httpOnly: 'true',
-                    maxAge: 30 * 60 * 1000
+                    httpOnly: 'true'
                 })
                 .cookie('refreshToken', refreshToken, {
-                    httpOnly: 'true',
-                    maxAge: 365 * 24 * 60 * 60 * 1000
+                    httpOnly: 'true'
                 })
                 .send({
                     status: 'register success',
@@ -66,6 +64,7 @@ module.exports = {
                     'avatar username fullname followers following'
                 )
                 .exec();
+
             if (!email || !password)
                 throw createError.BadRequest('empty email or password');
             if (!user) throw createError.NotFound('email does not exists');
@@ -80,12 +79,10 @@ module.exports = {
 
             res.status(200)
                 .cookie('accessToken', accessToken, {
-                    httpOnly: 'true',
-                    maxAge: 30 * 60 * 1000
+                    httpOnly: 'true'
                 })
                 .cookie('refreshToken', refreshToken, {
-                    httpOnly: 'true',
-                    maxAge: 365 * 24 * 60 * 60 * 1000
+                    httpOnly: 'true'
                 })
                 .send({
                     status: 'login success',
@@ -115,8 +112,8 @@ module.exports = {
 
             res.status(200)
                 .cookie('accessToken', accessToken, {
-                    httpOnly: 'true',
-                    maxAge: 5 * 60 * 1000
+                    httpOnly: 'true'
+                    // maxAge: 5 * 60 * 1000
                 })
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: 'true',

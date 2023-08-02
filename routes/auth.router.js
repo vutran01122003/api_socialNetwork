@@ -1,23 +1,19 @@
 const router = require('express').Router();
-const authRouter = require('../controllers/auth.controllers');
+const authCtrl = require('../controllers/auth.controllers');
 const jwtService = require('../helper/jwt.service');
 
-router.post('/register', authRouter.register);
+router.post('/register', authCtrl.register);
 
-router.post('/login', authRouter.login);
-
-router.post(
-    '/refresh_token',
-    jwtService.verifyRefreshToken,
-    authRouter.refreshToken
-);
+router.post('/login', authCtrl.login);
 
 router.get(
-    '/access_token',
+    '/refresh_token',
     jwtService.verifyRefreshToken,
-    authRouter.accessToken
+    authCtrl.refreshToken
 );
 
-router.get('/logout', jwtService.verifyRefreshToken, authRouter.logout);
+router.get('/access_token', jwtService.verifyAccessToken, authCtrl.accessToken);
+
+router.get('/logout', authCtrl.logout);
 
 module.exports = router;

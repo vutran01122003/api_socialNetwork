@@ -1,6 +1,7 @@
-Get http://localhost:4000/
+GET http://localhost:4000/
+
 ###
-Post http://localhost:4000/api/register
+POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
@@ -10,8 +11,9 @@ Content-Type: application/json
     "fullname": "Tran Duc Vu",
     "gender": "Male"
 }
+
 ###
-Post http://localhost:4000/api/login
+POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
@@ -23,15 +25,16 @@ Content-Type: application/json
 GET http://localhost:4000/api/users
 
 ###
-Post http://localhost:4000/api/refresh_token
+POST http://localhost:4000/api/refresh_token
+
 ###
 GET http://localhost:4000/api/access_token
 
 ###
-Get http://localhost:4000/api/logout
+GET http://localhost:4000/api/logout
 
 ###
-Post http://localhost:4000/api/user 
+POST http://localhost:4000/api/user 
 Content-Type: application/json
 
 {
@@ -39,9 +42,12 @@ Content-Type: application/json
 }
 
 ###
-Get http://localhost:4000/api/user/64a3ddae4a25ed34ebbf0da6
+GET http://localhost:4000/api/user/64a3ddae4a25ed34ebbf0da6
 
 ###
 PATCH http://localhost:4000/api/user/64a3ddae4a25ed34ebbf0da6
+
+###
+GET http://localhost:4000/api/posts_discover
 
 
