@@ -35,7 +35,7 @@ module.exports = {
         try {
             const accessToken =
                 req?.headers['x-token'] || req.cookies?.accessToken;
-            const routes = ['/posts', '/posts_discover'];
+            const routes = ['/posts', '/posts_discover', '/suggested_users'];
 
             const data = await jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
 

@@ -50,4 +50,7 @@ PATCH http://localhost:4000/api/user/64a3ddae4a25ed34ebbf0da6
 ###
 GET http://localhost:4000/api/posts_discover
 
+###
+GET http://localhost:4000/api/suggested_users
+
 

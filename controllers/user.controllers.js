@@ -36,6 +36,27 @@ module.exports = {
 
             res.status(200).send({ user });
         } catch (error) {
+            next(error);
+        }
+    },
+
+    getSuggestedUser: async (req, res, next) => {
+        try {
+            const user = req.user;
+            const users = await User.aggregate([
+                {
+                    $match: {
+                        _id: { $nin: [user._id, ...user.following] }
+                    }
+                },
+                { $sample: { size: 5 } }
+            ]);
+
+            res.status(200).send({
+                status: 'get suggested users successfull',
+                suggestedUsers: users
+            });
+        } catch (error) {
             console.log(error);
             next(error);
         }

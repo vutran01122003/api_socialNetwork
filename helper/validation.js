@@ -27,8 +27,8 @@ module.exports = {
     editProfileValidation: async (user) => {
         try {
             const schema = Joi.object({
-                username: Joi.string().alphanum().min(3).max(30).required(),
-                fullname: Joi.string().min(5).max(30).required(),
+                username: Joi.string().alphanum().min(5).max(25).required(),
+                fullname: Joi.string().min(5).max(25).required(),
                 story: Joi.string().min(0).max(150).required(),
                 website: Joi.string().uri().required().allow(''),
                 gender: Joi.string().required(),
