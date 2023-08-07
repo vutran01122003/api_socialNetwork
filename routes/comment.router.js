@@ -1,33 +1,13 @@
 const router = require('express').Router();
 const commentCtrl = require('../controllers/comment.controllers');
-const jwtService = require('../helper/jwt.service');
+const { auth } = require('../middleware/auth');
 
-router.post(
-    '/comment',
-    jwtService.verifyAccessToken,
-    commentCtrl.createComment
-);
+router.post('/comment', auth, commentCtrl.createComment);
 
-router.patch(
-    '/comment',
-    jwtService.verifyAccessToken,
-    commentCtrl.updateComment
-);
-router.patch(
-    '/comment/:id/like',
-    jwtService.verifyAccessToken,
-    commentCtrl.likeComment
-);
-router.patch(
-    '/comment/:id/unlike',
-    jwtService.verifyAccessToken,
-    commentCtrl.unlikeComment
-);
+router.patch('/comment', auth, commentCtrl.updateComment);
+router.patch('/comment/:id/like', auth, commentCtrl.likeComment);
+router.patch('/comment/:id/unlike', auth, commentCtrl.unlikeComment);
 
-router.delete(
-    '/comment',
-    jwtService.verifyAccessToken,
-    commentCtrl.deleteComment
-);
+router.delete('/comment', auth, commentCtrl.deleteComment);
 
 module.exports = router;

@@ -1,15 +1,25 @@
 const createError = require('http-errors');
-const Post = require('../models/Post');
-const { queryDB } = require('../helper/queryDB');
+const {
+    getPostService,
+    getUserPostsService,
+    updatePostService,
+    deletePostService,
+    likePostService,
+    unlikePostService,
+    getPostsDiscoverService,
+    savePostService,
+    getPostsService,
+    unsavePostService,
+    createPostService
+} = require('../services/post.service');
 const ObjectId = require('mongoose').Types.ObjectId;
+
 module.exports = {
     createPost: async (req, res, next) => {
         try {
             const postData = req.body.postData;
 
-            const createdPost = new Post(postData);
-            createdPost.populate('user', 'fullname username avatar');
-            await createdPost.save();
+            const createdPost = await createPostService(postData);
 
             res.status(200).send({
                 status: 'post created successfully',
@@ -30,42 +40,7 @@ module.exports = {
             if (!ObjectId.isValid(postId))
                 throw createError.NotFound('post not found');
 
-            const post = await Post.findById(postId)
-                .populate('user likes', 'fullname username avatar')
-                .populate({
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                });
+            const post = await getPostService({ _id: postId });
 
             if (post) {
                 res.status(200).send({
@@ -84,48 +59,14 @@ module.exports = {
     getPosts: async (req, res, next) => {
         try {
             const user = req.user;
-            const posts = await queryDB(
-                Post.find({
+            const posts = await getPostsService(
+                {
                     user: [user._id, ...user.following]
-                })
-                    .sort({ createdAt: -1 })
-                    .populate('user likes comments', 'fullname username avatar')
-                    .populate({
-                        path: 'comments',
-                        options: { sort: { createdAt: -1 } },
-                        populate: [
-                            {
-                                path: 'user',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'likes',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'reply',
-                                model: 'comment',
-                                options: { sort: { createdAt: -1 } },
-                                select: 'user content likes createdAt',
-                                populate: [
-                                    {
-                                        path: 'user',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    },
-                                    {
-                                        path: 'likes',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    }
-                                ]
-                            }
-                        ]
-                    }),
+                },
                 req.query
             );
+
+            if (!posts) throw createError.NotFound('posts not found');
 
             res.send({
                 status: 'get posts successfully',
@@ -144,45 +85,11 @@ module.exports = {
 
             if (!id) throw createError.NotFound('user not found');
 
-            const posts = await Post.find({
+            const posts = await getUserPostsService({
                 user: id
-            })
-                .sort({ createdAt: -1 })
-                .populate('user likes', 'fullname username avatar')
-                .populate({
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                });
+            });
+
+            if (!posts) throw createError.NotFound('posts not found');
 
             res.send({
                 status: 'get user posts successfully',
@@ -201,44 +108,9 @@ module.exports = {
             if (!postId) throw createError.NotFound('post not found');
 
             const updatedData = req.body.data.updatedData;
-            const newPost = await Post.findByIdAndUpdate(postId, updatedData, {
-                new: true
-            })
-                .populate('user likes', 'fullname username avatar')
-                .populate({
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                });
+            const newPost = await updatePostService({ postId, updatedData });
+
+            if (!newPost) throw createError.NotFound('post not found');
 
             res.status(200).send({
                 status: 'post update successful',
@@ -255,7 +127,8 @@ module.exports = {
 
             if (!postId) throw createError.NotFound('post not found');
 
-            const deletedPost = await Post.findByIdAndDelete(postId);
+            const deletedPost = await deletePostService(postId);
+
             res.status(200).send({
                 status: 'post delete successful',
                 postData: deletedPost
@@ -272,48 +145,10 @@ module.exports = {
 
             if (!postId) throw createError.NotFound('post not found');
 
-            const post = await Post.findByIdAndUpdate(
+            const post = await likePostService({
                 postId,
-                {
-                    $push: { likes: user }
-                },
-                { new: true }
-            )
-                .populate('likes user', 'avatar username fullname')
-                .populate({
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                });
+                userId: user._id
+            });
 
             res.status(200).send({
                 status: 'you liked the post',
@@ -329,48 +164,10 @@ module.exports = {
             const postId = req.params.id;
             const user = req.body.userData;
 
-            const post = await Post.findByIdAndUpdate(
+            const post = await unlikePostService({
                 postId,
-                {
-                    $pull: { likes: user._id }
-                },
-                { new: true }
-            )
-                .populate('likes user', 'avatar username fullname')
-                .populate({
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                });
+                userId: user._id
+            });
 
             res.status(200).send({
                 status: 'you unliked the post',
@@ -386,13 +183,54 @@ module.exports = {
         try {
             const user = req.user;
 
-            const posts = await Post.find({
-                user: { $nin: [user._id, ...user.following] }
-            });
+            const posts = await getPostsDiscoverService(user);
 
             res.status(200).send({
                 status: 'get posts discover successful',
                 posts
+            });
+        } catch (error) {
+            console.log(error);
+            next(error);
+        }
+    },
+
+    savedPost: async (req, res, next) => {
+        try {
+            const postId = req.params.id;
+            const userId = res.locals.userId;
+
+            if (!postId) throw createError('post not found');
+
+            const updatedUser = await savePostService({
+                userId,
+                postId
+            });
+
+            res.status(200).send({
+                status: 'post saved successfully',
+                user: updatedUser
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    unSavedPost: async (req, res, next) => {
+        try {
+            const postId = req.params.id;
+            const userId = res.locals.userId;
+
+            if (!postId) throw createError('post not found');
+
+            const updatedUser = await unsavePostService({
+                userId,
+                postId
+            });
+
+            res.status(200).send({
+                status: 'post unsaved successfully',
+                user: updatedUser
             });
         } catch (error) {
             console.log(error);

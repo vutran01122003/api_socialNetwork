@@ -1,17 +1,24 @@
 const validation = require('../helper/validation');
-const User = require('../models/User');
 const createError = require('http-errors');
+const {
+    getUserService,
+    getSuggestedUserSerive,
+    updateEditUserService,
+    updateFollowerUserService,
+    updateFollowingUserService,
+    updateUnfollowerUserService,
+    updateUnfollowingUserService,
+    searchUsersService
+} = require('../services/user.service');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
     searchUser: async (req, res) => {
         try {
-            const { searchValue } = req.body;
-            const regex = new RegExp(searchValue);
-
-            const userList = await User.find({
-                username: { $regex: regex, $options: 'i' }
-            }).select('username fullname avatar');
+            const userList = await searchUsersService(
+                req.body.searchValue,
+                'username fullname avatar'
+            );
 
             res.status(200).send({
                 status: userList.length === 0 ? 'nothing' : 'success',
@@ -28,10 +35,7 @@ module.exports = {
             if (!ObjectId.isValid(id))
                 throw createError.NotFound('user not found');
 
-            const user = await User.findOne({ _id: id })
-                .select('-password')
-                .populate('followers following', 'fullname username avatar')
-                .exec();
+            const user = await getUserService({ _id: id }, '-password');
             if (!user) throw createError.NotFound('user not found');
 
             res.status(200).send({ user });
@@ -43,21 +47,13 @@ module.exports = {
     getSuggestedUser: async (req, res, next) => {
         try {
             const user = req.user;
-            const users = await User.aggregate([
-                {
-                    $match: {
-                        _id: { $nin: [user._id, ...user.following] }
-                    }
-                },
-                { $sample: { size: 5 } }
-            ]);
+            const users = await getSuggestedUserSerive(user, 5);
 
             res.status(200).send({
                 status: 'get suggested users successfull',
                 suggestedUsers: users
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
@@ -70,7 +66,8 @@ module.exports = {
             if (!ObjectId.isValid(id))
                 throw createError.NotFound('user not found');
 
-            const check = await User.findOne({ username: userData.username });
+            const check = await getUserService({ username: userData.username });
+
             if (check?._id.toString() !== id && check)
                 // Compare id's check and id's patch if equal then ignore else notify conflict
                 // Check check variable has value or null
@@ -78,9 +75,13 @@ module.exports = {
 
             await validation.editProfileValidation(userData);
 
-            const updatedUser = await User.findByIdAndUpdate(id, userData, {
-                new: true
-            }).select('-password');
+            const updatedUser = await updateEditUserService(
+                {
+                    userId: id,
+                    userData
+                },
+                '-password'
+            );
 
             res.status(200).send({
                 status: 'update user success',
@@ -90,30 +91,21 @@ module.exports = {
             next(error);
         }
     },
+
     follow: async (req, res, next) => {
         try {
             const userId = req.params.id;
             const authId = req.body.authId;
 
-            const updatedUser = await User.findByIdAndUpdate(
-                userId,
-                { $push: { followers: authId } },
-                { new: true }
-            )
-                .select('-password')
-                .populate(
-                    'followers following',
-                    'avatar username fullname followers following'
-                );
-
-            const updatedAuthUser = await User.findByIdAndUpdate(
+            const updatedUser = await updateFollowerUserService({
                 authId,
-                { $push: { following: userId } },
-                { new: true }
-            ).populate(
-                'followers following',
-                'avatar username fullname followers following'
-            );
+                userId
+            });
+
+            const updatedAuthUser = await updateFollowingUserService({
+                authId,
+                userId
+            });
 
             res.status(200).send({
                 user: updatedUser,
@@ -123,30 +115,21 @@ module.exports = {
             next(error);
         }
     },
+
     unfollow: async (req, res, next) => {
         try {
             const userId = req.params.id;
             const authId = req.body.authId;
 
-            const updatedUser = await User.findByIdAndUpdate(
+            const updatedUser = await updateUnfollowerUserService({
                 userId,
-                { $pull: { followers: authId } },
-                { new: true }
-            )
-                .select('-password')
-                .populate(
-                    'followers following',
-                    'avatar username fullname followers following'
-                );
+                authId
+            });
 
-            const updatedAuthUser = await User.findByIdAndUpdate(
-                authId,
-                { $pull: { following: userId } },
-                { new: true }
-            ).populate(
-                'followers following',
-                'avatar username fullname followers following'
-            );
+            const updatedAuthUser = await updateUnfollowingUserService({
+                userId,
+                authId
+            });
 
             res.status(200).send({
                 user: updatedUser,

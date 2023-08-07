@@ -27,6 +27,6 @@ const PostSchema = new Schema(
     }
 );
 
-const Post = conn.model('Post', PostSchema);
+const Post = conn.model('post', PostSchema);
 
 module.exports = Post;

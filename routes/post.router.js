@@ -1,26 +1,20 @@
 const Router = require('express').Router();
 const postCtrl = require('../controllers/post.controllers');
-const jwtService = require('../helper/jwt.service');
+const { auth } = require('../middleware/auth');
 
-Router.get('/post/:id', jwtService.verifyAccessToken, postCtrl.getPost);
-Router.get('/posts', jwtService.verifyAccessToken, postCtrl.getPosts);
-Router.get('/posts/:id', jwtService.verifyAccessToken, postCtrl.getUserPosts);
-Router.get(
-    '/posts_discover',
-    jwtService.verifyAccessToken,
-    postCtrl.getPostsDiscover
-);
+Router.get('/post/:id', auth, postCtrl.getPost);
+Router.get('/posts', auth, postCtrl.getPosts);
+Router.get('/posts/:id', auth, postCtrl.getUserPosts);
+Router.get('/posts_discover', auth, postCtrl.getPostsDiscover);
 
-Router.post('/post', jwtService.verifyAccessToken, postCtrl.createPost);
+Router.post('/post', auth, postCtrl.createPost);
 
-Router.patch('/post', jwtService.verifyAccessToken, postCtrl.updatePost);
-Router.patch('/post/:id/like', jwtService.verifyAccessToken, postCtrl.likePost);
-Router.patch(
-    '/post/:id/unlike',
-    jwtService.verifyAccessToken,
-    postCtrl.unlikePost
-);
+Router.patch('/post', auth, postCtrl.updatePost);
+Router.patch('/post/:id/like', auth, postCtrl.likePost);
+Router.patch('/post/:id/unlike', auth, postCtrl.unlikePost);
+Router.patch('/saved_post/:id', auth, postCtrl.savedPost);
+Router.patch('/unsaved_post/:id', auth, postCtrl.unSavedPost);
 
-Router.delete('/post/:id', jwtService.verifyAccessToken, postCtrl.deletePost);
+Router.delete('/post/:id', auth, postCtrl.deletePost);
 
 module.exports = Router;

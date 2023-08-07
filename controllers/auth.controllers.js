@@ -1,14 +1,19 @@
-const User = require('../models/User');
 const createError = require('http-errors');
 const validation = require('../helper/validation');
-const jwtService = require('../helper/jwt.service');
+const jwtService = require('../services/jwt.service');
+const {
+    getUserService,
+    populateUserService,
+    createUserService
+} = require('../services/auth.service');
 
 module.exports = {
     register: async (req, res, next) => {
         try {
-            const { email, password, username, fullname, gender } = req.body;
-            const checkEmail = await User.findOne({ email });
-            const checkUsername = await User.findOne({ username });
+            const { email, password, username } = req.body;
+
+            const checkEmail = await getUserService({ email });
+            const checkUsername = await getUserService({ username });
 
             if (!email || !password)
                 throw createError.BadRequest('empty email or password');
@@ -17,15 +22,9 @@ module.exports = {
                 throw createError.Conflict('username was exists');
 
             await validation.registerValidation(req.body);
-            const userCreated = new User({
-                email,
-                password,
-                username,
-                fullname,
-                gender
-            });
 
-            userCreated.save();
+            const userCreated = await createUserService(req.body);
+
             const accessToken = await jwtService.signAccessToken(
                 userCreated._id
             );
@@ -58,12 +57,7 @@ module.exports = {
         try {
             const { email, password } = req.body;
 
-            const user = await User.findOne({ email })
-                .populate(
-                    'followers following',
-                    'avatar username fullname followers following'
-                )
-                .exec();
+            const user = await populateUserService({ email });
 
             if (!email || !password)
                 throw createError.BadRequest('empty email or password');
@@ -100,20 +94,15 @@ module.exports = {
     refreshToken: async (req, res, next) => {
         try {
             const id = res.locals.userId;
-            const user = await User.findOne({ _id: id })
-                .populate(
-                    'followers following',
-                    'avatar username fullname followers following'
-                )
-                .select('-password')
-                .exec();
+
+            const user = await populateUserService({ _id: id }, '-password');
+
             const accessToken = await jwtService.signAccessToken(id);
             const refreshToken = await jwtService.signRefreshToken(id);
 
             res.status(200)
                 .cookie('accessToken', accessToken, {
                     httpOnly: 'true'
-                    // maxAge: 5 * 60 * 1000
                 })
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: 'true',
@@ -137,13 +126,8 @@ module.exports = {
             const accessToken = req.cookies.accessToken;
             const refreshToken = req.cookies.refreshToken;
 
-            const user = await User.findOne({ _id: id })
-                .populate(
-                    'followers following',
-                    'avatar username fullname followers following'
-                )
-                .select('-password')
-                .exec();
+            const user = await populateUserService({ _id: id }, '-password');
+
             if (!user) throw createError.NotFound('user not exists');
             return res.status(200).send({
                 user,
