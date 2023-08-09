@@ -4,12 +4,10 @@ module.exports = {
 
         const limit = 3;
         let skip = (page - 1) * limit;
-        const changedPosts = currentPostCount - (page - 1) * limit;
 
-        if (changedPosts > 0) {
+        if (currentPostCount) {
+            const changedPosts = currentPostCount - (page - 1) * limit;
             skip += changedPosts;
-        } else {
-            skip -= changedPosts;
         }
 
         return queryDB.skip(skip).limit(limit);

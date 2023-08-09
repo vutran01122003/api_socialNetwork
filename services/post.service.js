@@ -1,18 +1,18 @@
-const { queryDB } = require('../helper/queryDB');
+const { queryDB } = require('../helper/pagination.query');
 const Post = require('../models/Post');
 const User = require('../models/User');
 
 module.exports = {
     createPostService: async (postData) => {
         const createdPost = new Post(postData);
-        createdPost.populate('user', 'fullname username avatar');
+        createdPost.populate('user', 'fullname username avatar followers');
         await createdPost.save();
         return createdPost;
     },
 
     getPostService: async (filter) => {
         return Post.findOne(filter)
-            .populate('user likes', 'fullname username avatar')
+            .populate('user likes', 'fullname username avatar followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },
@@ -53,7 +53,10 @@ module.exports = {
         return queryDB(
             Post.find(filter)
                 .sort({ createdAt: -1 })
-                .populate('user likes comments', 'fullname username avatar')
+                .populate(
+                    'user likes comments',
+                    'fullname username avatar followers'
+                )
                 .populate({
                     path: 'comments',
                     options: { sort: { createdAt: -1 } },
@@ -61,7 +64,7 @@ module.exports = {
                         {
                             path: 'user',
                             model: 'user',
-                            select: 'username fullname avatar'
+                            select: 'username fullname avatar '
                         },
                         {
                             path: 'likes',
@@ -136,7 +139,7 @@ module.exports = {
         return Post.findByIdAndUpdate(postId, updatedData, {
             new: true
         })
-            .populate('user likes', 'fullname username avatar')
+            .populate('user likes', 'fullname username avatar followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },
@@ -185,7 +188,7 @@ module.exports = {
             },
             { new: true }
         )
-            .populate('likes user', 'avatar username fullname')
+            .populate('likes user', 'avatar username fullname followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },
@@ -230,7 +233,7 @@ module.exports = {
             },
             { new: true }
         )
-            .populate('likes user', 'avatar username fullname')
+            .populate('likes user', 'avatar username fullname followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },
@@ -335,7 +338,7 @@ module.exports = {
 
     findUpdatedPost: async (postId) => {
         return Post.findById(postId)
-            .populate('user likes', 'fullname username avatar')
+            .populate('user likes', 'fullname username avatar followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },
@@ -380,7 +383,7 @@ module.exports = {
             },
             { new: true }
         )
-            .populate('user likes', 'fullname username avatar')
+            .populate('user likes', 'fullname username avatar followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },
@@ -425,7 +428,7 @@ module.exports = {
             },
             { new: true }
         )
-            .populate('user likes', 'fullname username avatar')
+            .populate('user likes', 'fullname username avatar followers')
             .populate({
                 path: 'comments',
                 options: { sort: { createdAt: -1 } },

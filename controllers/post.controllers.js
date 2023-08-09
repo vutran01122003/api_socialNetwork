@@ -59,6 +59,7 @@ module.exports = {
     getPosts: async (req, res, next) => {
         try {
             const user = req.user;
+
             const posts = await getPostsService(
                 {
                     user: [user._id, ...user.following]
