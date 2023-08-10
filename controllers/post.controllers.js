@@ -26,7 +26,6 @@ module.exports = {
                 postData: createdPost
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
@@ -51,7 +50,6 @@ module.exports = {
                 throw createError.NotFound('post not found');
             }
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
@@ -75,7 +73,6 @@ module.exports = {
                 result: posts.length
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
@@ -175,7 +172,6 @@ module.exports = {
                 newPost: post
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
@@ -191,7 +187,6 @@ module.exports = {
                 posts
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
@@ -234,7 +229,6 @@ module.exports = {
                 user: updatedUser
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     }

@@ -22,6 +22,7 @@ const authRouter = require('./routes/auth.router');
 const userRouter = require('./routes/user.router');
 const postRouter = require('./routes/post.router');
 const commentRouter = require('./routes/comment.router');
+const notificationRouter = require('./routes/notification.router');
 const SocketService = require('./services/socket.service');
 
 const options = { origin: process.env.DOMAIN_CLIENT, credentials: true };
@@ -36,13 +37,9 @@ app.use('/api', authRouter);
 app.use('/api', userRouter);
 app.use('/api', postRouter);
 app.use('/api', commentRouter);
+app.use('/api', notificationRouter);
 
 global._io.on('connection', SocketService.connection);
-
-app.get('/', (req, res) => {
-    console.log(SocketService.user);
-    res.status(200).send('hello');
-});
 
 app.use((req, res, next) => {
     return res.status(400).send({

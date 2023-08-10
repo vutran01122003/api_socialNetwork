@@ -73,7 +73,6 @@ module.exports = {
                 newPost: post
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },
