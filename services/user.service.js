@@ -53,11 +53,7 @@ module.exports = {
     },
 
     updateFollowerUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(
-            userId,
-            { $push: { followers: authId } },
-            { new: true }
-        )
+        return User.findByIdAndUpdate(userId, { $push: { followers: authId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -79,11 +75,7 @@ module.exports = {
     },
 
     updateFollowingUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(
-            authId,
-            { $push: { following: userId } },
-            { new: true }
-        )
+        return User.findByIdAndUpdate(authId, { $push: { following: userId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -105,11 +97,7 @@ module.exports = {
     },
 
     updateUnfollowerUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(
-            userId,
-            { $pull: { followers: authId } },
-            { new: true }
-        )
+        return User.findByIdAndUpdate(userId, { $pull: { followers: authId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -131,11 +119,7 @@ module.exports = {
     },
 
     updateUnfollowingUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(
-            authId,
-            { $pull: { following: userId } },
-            { new: true }
-        )
+        return User.findByIdAndUpdate(authId, { $pull: { following: userId } }, { new: true })
             .select('-password')
             .populate([
                 {

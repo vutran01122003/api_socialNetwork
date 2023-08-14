@@ -1,3 +1,4 @@
+const { queryDB } = require('../helper/pagination.query');
 const Notification = require('../models/Notification');
 
 module.exports = {
@@ -17,12 +18,13 @@ module.exports = {
         try {
             const userId = res.locals.userId;
 
-            const notifications = await Notification.find({
-                receiver: userId
-            })
-                .sort({ createdAt: -1 })
-                .exec();
-
+            const notifications = await queryDB(
+                Notification.find({
+                    receiver: userId
+                }).sort({ createdAt: -1 }),
+                req.query,
+                10
+            );
             res.status(200).send({
                 status: 'get notification successful',
                 notifications
@@ -44,7 +46,7 @@ module.exports = {
             ).exec();
 
             res.status(200).send({
-                status: 'updated notification successful',
+                status: 'update notification successful',
                 updatedNotification
             });
         } catch (error) {
@@ -64,9 +66,30 @@ module.exports = {
             ).exec();
 
             res.status(200).send({
-                status: 'readed notification successful',
+                status: 'read notification successful',
                 type: 'read',
                 readedNotification
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    readedNotifications: async (req, res, next) => {
+        try {
+            const userId = req.body.userId;
+
+            const readedAllNotifications = await Notification.updateMany(
+                { receiver: userId, readedUser: { $nin: [userId] } },
+                {
+                    $push: { readedUser: userId }
+                }
+            ).exec();
+
+            res.status(200).send({
+                status: 'read all notifications successful',
+                type: 'read',
+                readedAllNotifications
             });
         } catch (error) {
             next(error);
@@ -85,7 +108,7 @@ module.exports = {
             ).exec();
 
             res.status(200).send({
-                status: 'unreaded notification successful',
+                status: 'unread notification successful',
                 type: 'unread',
                 unreadedNotification
             });
@@ -112,6 +135,34 @@ module.exports = {
             res.status(200).send({
                 status: 'delete notification successful',
                 deletedNotification
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    deleteNotifications: async (req, res, next) => {
+        try {
+            const userId = req.body.data.userId;
+
+            const deletedAllNotifications = await Notification.updateMany(
+                {
+                    receiver: userId
+                },
+                {
+                    $pull: {
+                        receiver: userId
+                    }
+                }
+            ).exec();
+
+            await Notification.deleteMany({
+                receiver: { $size: 0 }
+            }).exec();
+
+            res.status(200).send({
+                status: 'delete all notifications successful',
+                deletedAllNotifications
             });
         } catch (error) {
             next(error);

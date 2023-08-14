@@ -15,23 +15,17 @@ module.exports = {
             const checkEmail = await getUserService({ email });
             const checkUsername = await getUserService({ username });
 
-            if (!email || !password)
-                throw createError.BadRequest('empty email or password');
+            if (!email || !password) throw createError.BadRequest('empty email or password');
             if (checkEmail) throw createError.Conflict('email was exists');
-            if (checkUsername)
-                throw createError.Conflict('username was exists');
+            if (checkUsername) throw createError.Conflict('username was exists');
 
             await validation.registerValidation(req.body);
 
             const userCreated = await createUserService(req.body);
 
-            const accessToken = await jwtService.signAccessToken(
-                userCreated._id
-            );
+            const accessToken = await jwtService.signAccessToken(userCreated._id);
 
-            const refreshToken = await jwtService.signRefreshToken(
-                userCreated._id
-            );
+            const refreshToken = await jwtService.signRefreshToken(userCreated._id);
 
             res.status(200)
                 .cookie('accessToken', accessToken, {
@@ -58,8 +52,7 @@ module.exports = {
 
             const user = await populateUserService({ email });
 
-            if (!email || !password)
-                throw createError.BadRequest('empty email or password');
+            if (!email || !password) throw createError.BadRequest('empty email or password');
             if (!user) throw createError.NotFound('email does not exists');
             const isValid = user.checkPassword(password);
             if (!isValid) {
@@ -139,8 +132,6 @@ module.exports = {
         }
     },
     logout: async (req, res) => {
-        res.clearCookie('accessToken')
-            .clearCookie('refreshToken')
-            .send('success logout');
+        res.clearCookie('accessToken').clearCookie('refreshToken').send('success logout');
     }
 };

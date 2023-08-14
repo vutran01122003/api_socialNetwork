@@ -4,12 +4,12 @@ const User = require('../models/User');
 
 module.exports = {
     createPostService: async (postData) => {
-        const createdPost = new Post(postData);
-        createdPost.populate('user', 'fullname username avatar followers');
-        await createdPost.save();
-        return createdPost;
+        const createdPost = await Post.create(postData);
+        const populatedPost = await Post.findById(createdPost._id)
+            .populate('user', 'fullname username avatar followers')
+            .exec();
+        return populatedPost;
     },
-
     getPostService: async (filter) => {
         return Post.findOne(filter)
             .populate('user likes', 'fullname username avatar followers')
@@ -53,10 +53,7 @@ module.exports = {
         return queryDB(
             Post.find(filter)
                 .sort({ createdAt: -1 })
-                .populate(
-                    'user likes comments',
-                    'fullname username avatar followers'
-                )
+                .populate('user likes comments', 'fullname username avatar followers')
                 .populate({
                     path: 'comments',
                     options: { sort: { createdAt: -1 } },
@@ -91,7 +88,8 @@ module.exports = {
                         }
                     ]
                 }),
-            query
+            query,
+            3
         );
     },
 

@@ -5,8 +5,7 @@ const { findOneUserService } = require('../services/user.service');
 module.exports = {
     auth: async (req, res, next) => {
         try {
-            const accessToken =
-                req?.headers['x-token'] || req.cookies?.accessToken;
+            const accessToken = req?.headers['x-token'] || req.cookies?.accessToken;
             const routes = ['/posts', '/posts_discover', '/suggested_users'];
 
             const data = await jwtService.verifyAccessToken(accessToken);
@@ -20,9 +19,7 @@ module.exports = {
 
             next();
         } catch (error) {
-            if (
-                ['JsonWebTokenError', 'TokenExpiredError'].includes(error.name)
-            ) {
+            if (['JsonWebTokenError', 'TokenExpiredError'].includes(error.name)) {
                 next({ status: 200, code: 401, message: error.message });
             }
             next(error);

@@ -44,7 +44,8 @@ module.exports = {
 
     deleteComment: async (req, res, next) => {
         try {
-            const { postId, commentId } = req.body;
+            const { postId, commentId } = req.body.data.commentData;
+
             const deletedComment = await deleteCommentService(commentId);
 
             const updatedPost = await getPostOfDeletedCommentService({
@@ -57,6 +58,7 @@ module.exports = {
                 newPost: updatedPost
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },

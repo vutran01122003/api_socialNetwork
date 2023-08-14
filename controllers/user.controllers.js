@@ -32,8 +32,7 @@ module.exports = {
     getUser: async (req, res, next) => {
         try {
             const { id } = req.params;
-            if (!ObjectId.isValid(id))
-                throw createError.NotFound('user not found');
+            if (!ObjectId.isValid(id)) throw createError.NotFound('user not found');
 
             const user = await getUserService({ _id: id }, '-password');
             if (!user) throw createError.NotFound('user not found');
@@ -63,8 +62,7 @@ module.exports = {
             const { id } = req.params;
             const userData = req.body;
 
-            if (!ObjectId.isValid(id))
-                throw createError.NotFound('user not found');
+            if (!ObjectId.isValid(id)) throw createError.NotFound('user not found');
 
             const check = await getUserService({ username: userData.username });
 

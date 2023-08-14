@@ -36,8 +36,7 @@ module.exports = {
 
             if (!postId) throw createError.NotFound('post not found');
 
-            if (!ObjectId.isValid(postId))
-                throw createError.NotFound('post not found');
+            if (!ObjectId.isValid(postId)) throw createError.NotFound('post not found');
 
             const post = await getPostService({ _id: postId });
 

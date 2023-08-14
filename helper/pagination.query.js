@@ -1,12 +1,10 @@
 module.exports = {
-    queryDB: async (queryDB, queryURL) => {
-        const { page, currentPostCount } = queryURL;
+    queryDB: async (queryDB, queryURL, limit) => {
+        const { page, currentQuantity } = queryURL;
 
-        const limit = 3;
         let skip = (page - 1) * limit;
-
-        if (currentPostCount) {
-            const changedPosts = currentPostCount - (page - 1) * limit;
+        if (currentQuantity) {
+            const changedPosts = currentQuantity - (page - 1) * limit;
             skip += changedPosts;
         }
 

@@ -7,12 +7,9 @@ module.exports = {
             const schema = Joi.object({
                 username: Joi.string().alphanum().min(3).max(30).required(),
                 password: Joi.string().min(5).max(20).required(),
-                cf_password: Joi.any()
-                    .valid(Joi.ref('password'))
-                    .required()
-                    .messages({
-                        'any.only': 'Password must match'
-                    }),
+                cf_password: Joi.any().valid(Joi.ref('password')).required().messages({
+                    'any.only': 'Password must match'
+                }),
                 email: Joi.string().email().required(),
                 fullname: Joi.string().min(5).max(30).required(),
                 gender: Joi.string().required()

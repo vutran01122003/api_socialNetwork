@@ -3,11 +3,11 @@ const conn = require('../config/userDB');
 
 const NotificationSchema = new mongoose.Schema(
     {
-        id: mongoose.Types.ObjectId,
+        postId: mongoose.Types.ObjectId,
         url: String,
         title: String,
         avatar: String,
-        user: {
+        postOwnerId: {
             type: mongoose.Types.ObjectId,
             ref: 'user'
         },
