@@ -6,10 +6,12 @@ class SocketService {
         socket.on('connected_user', (userId) => {
             id = userId;
             this.user[userId] = socket.id;
+            global._io.emit('user_online_list', this.user);
         });
 
         socket.on('disconnect', () => {
             delete this.user[id];
+            global._io.emit('user_online_list', this.user);
         });
         // Create post
         socket.on('notification_createdPost', (createdNotification) => {

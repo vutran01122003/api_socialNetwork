@@ -16,7 +16,7 @@ const NotificationSchema = new mongoose.Schema(
             type: String,
             default: ''
         },
-        image: {
+        file: {
             type: String,
             default: ''
         },

@@ -175,7 +175,7 @@ module.exports = {
     },
 
     deletePostService: async (postId) => {
-        return Post.findByIdAndDelete(postId);
+        return Post.deleteOne({ _id: postId });
     },
 
     likePostService: async ({ postId, userId }) => {

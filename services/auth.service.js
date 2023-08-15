@@ -21,7 +21,7 @@ module.exports = {
                 {
                     path: 'following',
                     model: 'user',
-                    select: 'fullname username avatar'
+                    select: 'fullname username avatar following'
                 },
                 {
                     path: 'saved',

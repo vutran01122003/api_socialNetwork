@@ -8,7 +8,7 @@ const PostSchema = new Schema(
             type: String,
             default: ''
         },
-        images: {
+        files: {
             type: Array,
             default: []
         },
@@ -26,6 +26,24 @@ const PostSchema = new Schema(
         timestamps: true
     }
 );
+
+PostSchema.pre('deleteOne', async function (next) {
+    try {
+        const postId = this.getQuery()._id;
+        const Post = await this.model.findById(postId);
+
+        const Comment = require('./Comment');
+
+        // Bucket Partern can resolve but too late...
+        for (let originCommentId of Post.comments) {
+            await Comment.deleteOne({ _id: originCommentId });
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 const Post = conn.model('post', PostSchema);
 

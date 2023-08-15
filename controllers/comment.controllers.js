@@ -16,13 +16,13 @@ const {
 module.exports = {
     createComment: async (req, res, next) => {
         try {
-            const { postId, commentId, ...commentData } = req.body.commentData;
+            const { postId, ...commentData } = req.body.commentData;
             const createdComment = await createCommentService(commentData);
             let updatedPost = null;
 
-            if (commentId) {
+            if (commentData.originCommentId) {
                 await createReplyCommentService({
-                    commentId,
+                    originCommentId: commentData.originCommentId,
                     createdCommentId: createdComment._id
                 });
                 updatedPost = await findUpdatedPost(postId);
@@ -53,6 +53,7 @@ module.exports = {
                 deletedCommentId: deletedComment._id
             });
 
+            console.log(updatedPost);
             res.status(200).send({
                 status: 'comment deleted successfully',
                 newPost: updatedPost

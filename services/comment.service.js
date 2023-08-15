@@ -5,8 +5,8 @@ module.exports = {
         return Comment.create(data);
     },
 
-    createReplyCommentService: async ({ commentId, createdCommentId }) => {
-        return Comment.findByIdAndUpdate(commentId, {
+    createReplyCommentService: async ({ originCommentId, createdCommentId }) => {
+        return Comment.findByIdAndUpdate(originCommentId, {
             $push: { reply: createdCommentId }
         });
     },
@@ -42,6 +42,6 @@ module.exports = {
     },
 
     deleteCommentService: async (commentId) => {
-        return Comment.findByIdAndDelete(commentId);
+        return Comment.deleteOne({ _id: commentId }).exec();
     }
 };
