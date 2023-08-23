@@ -1,10 +1,19 @@
 const { queryDB } = require('../helper/pagination.query');
 const Notification = require('../models/Notification');
+const {
+    createNotification,
+    paginateNotifications,
+    updateReadedNotification,
+    updateReadedNotifications,
+    updateUnreadedNotification,
+    deleteNotification,
+    deleteNotifications
+} = require('../services/notification.service');
 
 module.exports = {
     createNotification: async (req, res, next) => {
         try {
-            const createdNotification = await Notification.create(req.body);
+            const createdNotification = await createNotification(req.body);
             res.status(200).send({
                 status: 'create notification successful',
                 createdNotification
@@ -18,36 +27,14 @@ module.exports = {
         try {
             const userId = res.locals.userId;
 
-            const notifications = await queryDB(
-                Notification.find({
-                    receiver: userId
-                }).sort({ createdAt: -1 }),
-                req.query,
-                10
-            );
+            const notifications = await paginateNotifications({
+                receiverId: userId,
+                queryURL: req.query,
+                limit: 10
+            });
             res.status(200).send({
                 status: 'get notification successful',
                 notifications
-            });
-        } catch (error) {
-            next(error);
-        }
-    },
-
-    updateNotification: async (req, res, next) => {
-        try {
-            const notificationId = req.body.notificationId;
-            const userId = req.body.userId;
-
-            const updatedNotification = await Notification.findByIdAndUpdate(
-                notificationId,
-                { $push: { readedUser: userId } },
-                { new: true }
-            ).exec();
-
-            res.status(200).send({
-                status: 'update notification successful',
-                updatedNotification
             });
         } catch (error) {
             next(error);
@@ -59,11 +46,10 @@ module.exports = {
             const notificationId = req.body.notificationId;
             const userId = req.body.userId;
 
-            const readedNotification = await Notification.findByIdAndUpdate(
+            const readedNotification = await updateReadedNotification({
                 notificationId,
-                { $push: { readedUser: userId } },
-                { new: true }
-            ).exec();
+                userId
+            });
 
             res.status(200).send({
                 status: 'read notification successful',
@@ -79,12 +65,7 @@ module.exports = {
         try {
             const userId = req.body.userId;
 
-            const readedAllNotifications = await Notification.updateMany(
-                { receiver: userId, readedUser: { $nin: [userId] } },
-                {
-                    $push: { readedUser: userId }
-                }
-            ).exec();
+            const readedAllNotifications = await updateReadedNotifications({ userId });
 
             res.status(200).send({
                 status: 'read all notifications successful',
@@ -101,11 +82,10 @@ module.exports = {
             const notificationId = req.body.notificationId;
             const userId = req.body.userId;
 
-            const unreadedNotification = await Notification.findByIdAndUpdate(
+            const unreadedNotification = await updateUnreadedNotification({
                 notificationId,
-                { $pull: { readedUser: userId } },
-                { new: true }
-            ).exec();
+                userId
+            });
 
             res.status(200).send({
                 status: 'unread notification successful',
@@ -122,16 +102,10 @@ module.exports = {
             const notificationId = req.params.id;
             const userId = req.body.data.userId;
 
-            const deletedNotification = await Notification.findByIdAndUpdate(
+            const deletedNotification = await deleteNotification({
                 notificationId,
-                { $pull: { receiver: userId } },
-                { new: true }
-            );
-
-            if (deletedNotification.receiver.length === 0) {
-                await Notification.findByIdAndDelete(notificationId);
-            }
-
+                userId
+            });
             res.status(200).send({
                 status: 'delete notification successful',
                 deletedNotification
@@ -145,20 +119,7 @@ module.exports = {
         try {
             const userId = req.body.data.userId;
 
-            const deletedAllNotifications = await Notification.updateMany(
-                {
-                    receiver: userId
-                },
-                {
-                    $pull: {
-                        receiver: userId
-                    }
-                }
-            ).exec();
-
-            await Notification.deleteMany({
-                receiver: { $size: 0 }
-            }).exec();
+            const deletedAllNotifications = await deleteNotifications({ userId });
 
             res.status(200).send({
                 status: 'delete all notifications successful',

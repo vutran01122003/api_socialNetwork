@@ -3,13 +3,9 @@ const conn = require('../config/userDB');
 
 const MessageSchema = new mongoose.Schema(
     {
-        content: {
-            type: String,
-            default: ''
-        },
-        images: {
-            type: Array,
-            default: []
+        conversationId: {
+            type: mongoose.Types.ObjectId,
+            ref: 'conversation'
         },
         sender: {
             type: mongoose.Types.ObjectId,
@@ -19,11 +15,18 @@ const MessageSchema = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: 'user'
         },
+        content: {
+            type: String,
+            default: ''
+        },
+        files: {
+            type: Array,
+            default: []
+        },
         likes: {
             type: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
             default: []
-        },
-        user: { type: mongoose.Types.ObjectId, ref: 'user' }
+        }
     },
     {
         timestamps: true

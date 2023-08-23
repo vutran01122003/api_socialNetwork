@@ -9,5 +9,17 @@ module.exports = {
         }
 
         return queryDB.skip(skip).limit(limit);
+    },
+    queryMessage: async ({ queryDB, queryUrl, totalDocs, limit }) => {
+        const { page } = queryUrl;
+        let _limit = limit;
+        let skip = totalDocs - page * _limit;
+        if (skip < 0) {
+            if (-skip >= limit) return [];
+            _limit += skip;
+            skip = 0;
+        }
+
+        return queryDB.skip(skip).limit(_limit).sort({ createdAt: 1 });
     }
 };

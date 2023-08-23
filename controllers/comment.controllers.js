@@ -53,13 +53,11 @@ module.exports = {
                 deletedCommentId: deletedComment._id
             });
 
-            console.log(updatedPost);
             res.status(200).send({
                 status: 'comment deleted successfully',
                 newPost: updatedPost
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },

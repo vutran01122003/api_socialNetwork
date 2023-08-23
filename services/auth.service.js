@@ -2,15 +2,18 @@ const User = require('../models/User');
 
 module.exports = {
     createUserService: async (data) => {
-        return User.create(data).exec();
+        const userCreated = new User(data);
+        await userCreated.save();
+        return userCreated;
     },
 
     getUserService: async (filter, select) => {
-        return User.findOne(filter).select(select).exec();
+        const user = await User.findOne(filter).select(select).exec();
+        return user;
     },
 
     populateUserService: async (filter, select) => {
-        return User.findOne(filter)
+        const populatedUser = User.findOne(filter)
             .select(select)
             .populate([
                 {
@@ -29,5 +32,6 @@ module.exports = {
                 }
             ])
             .exec();
+        return populatedUser;
     }
 };

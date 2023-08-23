@@ -85,8 +85,6 @@ class SocketService {
 
         // Save
         socket.on('notification_saved', (createdNotification) => {
-            console.log(createdNotification);
-
             socket
                 .to(this.user[createdNotification.postOwnerId])
                 .emit('notification_saved', createdNotification);
@@ -97,6 +95,24 @@ class SocketService {
             socket
                 .to(this.user[createdNotification.receiver[0]])
                 .emit('notification_followedUser', createdNotification);
+        });
+
+        // Message
+        socket.on('created_message', (data) => {
+            socket.to(this.user[data.createdMessage.receiver]).emit('created_message', data);
+        });
+
+        // Call
+        socket.on('call_user', (data) => {
+            socket.to(this.user[data.receiver._id]).emit('answer_user', data);
+        });
+
+        socket.on('end_call', (data) => {
+            socket.to(this.user[data.restUserId]).emit('end_call', data);
+        });
+
+        socket.on('answer_call', (data) => {
+            socket.to(this.user[data.senderId]).emit('answer_call', data);
         });
     };
 }
