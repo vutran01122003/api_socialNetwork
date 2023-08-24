@@ -10,8 +10,8 @@ module.exports = {
             .exec();
         return populatedPost;
     },
-    getPostService: async (filter) => {
-        return Post.findOne(filter)
+    getPostService: async ({ postId }) => {
+        return Post.findOne({ _id: postId })
             .populate('user likes', 'fullname username avatar followers')
             .populate({
                 path: 'comments',
@@ -49,9 +49,9 @@ module.exports = {
             });
     },
 
-    getPostsService: async (filter, query) => {
+    getPostsService: async ({ user, queryUrl }) => {
         return queryDB(
-            Post.find(filter)
+            Post.find({ user })
                 .sort({ createdAt: -1 })
                 .populate('user likes comments', 'fullname username avatar followers')
                 .populate({
@@ -88,49 +88,54 @@ module.exports = {
                         }
                     ]
                 }),
-            query,
-            3
+            queryUrl,
+            5
         );
     },
 
-    getUserPostsService: async (filter) => {
-        return Post.find(filter)
-            .sort({ createdAt: -1 })
-            .populate('user likes', 'fullname username avatar')
-            .populate({
-                path: 'comments',
-                options: { sort: { createdAt: -1 } },
-                populate: [
-                    {
-                        path: 'user',
-                        model: 'user',
-                        select: 'username fullname avatar'
-                    },
-                    {
-                        path: 'likes',
-                        model: 'user',
-                        select: 'username fullname avatar'
-                    },
-                    {
-                        path: 'reply',
-                        model: 'comment',
-                        options: { sort: { createdAt: -1 } },
-                        select: 'user content likes createdAt',
-                        populate: [
-                            {
-                                path: 'user',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'likes',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            }
-                        ]
-                    }
-                ]
-            });
+    getUserPostsService: async ({ userId, queryUrl, limit }) => {
+        const userPosts = await queryDB(
+            Post.find({ user: userId })
+                .sort({ createdAt: -1 })
+                .populate('user likes', 'fullname username avatar')
+                .populate({
+                    path: 'comments',
+                    options: { sort: { createdAt: -1 } },
+                    populate: [
+                        {
+                            path: 'user',
+                            model: 'user',
+                            select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'likes',
+                            model: 'user',
+                            select: 'username fullname avatar'
+                        },
+                        {
+                            path: 'reply',
+                            model: 'comment',
+                            options: { sort: { createdAt: -1 } },
+                            select: 'user content likes createdAt',
+                            populate: [
+                                {
+                                    path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'likes',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                }
+                            ]
+                        }
+                    ]
+                }),
+            queryUrl,
+            limit
+        );
+        return userPosts;
     },
 
     updatePostService: async ({ postId, updatedData }) => {

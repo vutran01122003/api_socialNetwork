@@ -13,12 +13,13 @@ const {
 const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
-    searchUser: async (req, res) => {
+    searchUser: async (req, res, next) => {
         try {
-            const userList = await searchUsersService(
-                req.body.searchValue,
-                'username fullname avatar'
-            );
+            const userList = await searchUsersService({
+                queryUrl: req.query,
+                searchValue: req.body.searchValue,
+                select: 'username fullname avatar'
+            });
 
             res.status(200).send({
                 status: userList.length === 0 ? 'nothing' : 'success',

@@ -1,11 +1,16 @@
 const User = require('../models/User');
-
+const { queryDB } = require('../helper/pagination.query');
 module.exports = {
-    searchUsersService: async (searchValue, select) => {
+    searchUsersService: async ({ queryUrl, searchValue, select }) => {
         const regex = new RegExp(searchValue);
-        return User.find({
-            username: { $regex: regex, $options: 'i' }
-        }).select(select);
+        const users = queryDB(
+            User.find({
+                username: { $regex: regex, $options: 'i' }
+            }).select(select),
+            queryUrl,
+            5
+        );
+        return users;
     },
 
     findOneUserService: async (filter) => {

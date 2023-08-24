@@ -38,7 +38,7 @@ module.exports = {
 
             if (!ObjectId.isValid(postId)) throw createError.NotFound('post not found');
 
-            const post = await getPostService({ _id: postId });
+            const post = await getPostService({ postId });
 
             if (post) {
                 res.status(200).send({
@@ -57,12 +57,10 @@ module.exports = {
         try {
             const user = req.user;
 
-            const posts = await getPostsService(
-                {
-                    user: [user._id, ...user.following]
-                },
-                req.query
-            );
+            const posts = await getPostsService({
+                user: [user._id, ...user.following],
+                queryUrl: req.query
+            });
 
             if (!posts) throw createError.NotFound('posts not found');
 
@@ -83,7 +81,9 @@ module.exports = {
             if (!id) throw createError.NotFound('user not found');
 
             const posts = await getUserPostsService({
-                user: id
+                userId: id,
+                queryUrl: req.query,
+                limit: 9
             });
 
             if (!posts) throw createError.NotFound('posts not found');

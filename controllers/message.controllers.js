@@ -1,6 +1,3 @@
-const Conversation = require('../models/Conversation');
-const Message = require('../models/Message');
-const { queryMessage } = require('../helper/pagination.query');
 const {
     createConversation,
     getConversation,
@@ -8,7 +5,8 @@ const {
     countMessage,
     paginateMessage,
     getConversations,
-    deleteMessage
+    deleteMessage,
+    deleteConversation
 } = require('../services/message.service');
 module.exports = {
     createMessage: async (req, res, next) => {
@@ -83,7 +81,9 @@ module.exports = {
                 populate: {
                     path: 'recipients',
                     select: 'avatar username fullname'
-                }
+                },
+                queryUrl: req.query,
+                limit: 10
             });
             res.status(200).send({
                 status: 'get conversations successful',
@@ -101,6 +101,19 @@ module.exports = {
             res.status(200).send({
                 status: 'delete message successful',
                 deletedMessage
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    deleteConversation: async (req, res, next) => {
+        try {
+            const conversationId = req.params.id;
+
+            const deletedConversation = await deleteConversation({ conversationId });
+            res.status(200).send({
+                status: 'delete conversation successful',
+                deletedConversation
             });
         } catch (error) {
             next(error);
