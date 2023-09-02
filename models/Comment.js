@@ -22,7 +22,7 @@ const CommentSchema = new Schema(
     }
 );
 
-CommentSchema.pre('deleteOne', async function (next) {
+CommentSchema.pre('findOneAndDelete', async function (next) {
     try {
         const Post = require('./Post');
         const commentId = this.getQuery()._id;

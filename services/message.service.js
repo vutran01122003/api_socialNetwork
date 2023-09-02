@@ -27,8 +27,28 @@ module.exports = {
         return createdMessage;
     },
     createConversation: async ({ receiver, sender }) => {
-        const newConversation = await Conversation.create({ recipients: [receiver, sender] });
+        const newConversation = await Conversation.findOneAndUpdate(
+            { $or: [{ recipients: [receiver, sender] }, { recipients: [sender, receiver] }] },
+            {
+                recipients: [receiver, sender],
+                readedUsers: [sender]
+            },
+            { new: true, upsert: true }
+        );
         return newConversation;
+    },
+    updateReadedConversation: async ({ conversationId, userId }) => {
+        const updatedConversation = await Conversation.findByIdAndUpdate(
+            conversationId,
+            {
+                $push: { readedUsers: userId }
+            },
+            {
+                new: true
+            }
+        ).populate('recipients', 'username fullname avatar');
+
+        return updatedConversation;
     },
     countMessage: async ({ conversationId }) => {
         const countDocs = await Message.countDocuments({ conversationId });
@@ -44,12 +64,12 @@ module.exports = {
         return messages;
     },
     deleteMessage: async ({ messageId }) => {
-        const deletedMessage = await Message.findByIdAndDelete(messageId);
+        const deletedMessage = await Message.findOneAndDelete({ _id: messageId });
         return deletedMessage;
     },
     deleteConversation: async ({ conversationId }) => {
         const deletedConversation = await Conversation.findByIdAndDelete(conversationId);
-        await Message.deleteMany({ conversationId });
+        const res = await Message.deleteMany({ conversationId });
         return deletedConversation;
     }
 };

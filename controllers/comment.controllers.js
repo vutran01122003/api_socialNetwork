@@ -87,7 +87,7 @@ module.exports = {
                 commentId,
                 userId
             });
-            const post = await getPostService({ _id: postId });
+            const post = await getPostService({ postId });
 
             res.status(200).send({
                 status: 'like comment successful',
@@ -107,7 +107,7 @@ module.exports = {
                 commentId,
                 userId
             });
-            const post = await getPostService({ _id: postId });
+            const post = await getPostService({ postId });
 
             res.status(200).send({
                 status: 'unlike comment successful',

@@ -6,19 +6,15 @@ const {
     paginateMessage,
     getConversations,
     deleteMessage,
-    deleteConversation
+    deleteConversation,
+    updateReadedConversation
 } = require('../services/message.service');
 module.exports = {
     createMessage: async (req, res, next) => {
         const { receiver, sender } = req.body.postData;
 
         try {
-            let conversation = null;
-            conversation = await getConversation({ receiver, sender });
-            if (!conversation) {
-                conversation = await createConversation({ receiver, sender });
-            }
-
+            const conversation = await createConversation({ receiver, sender });
             const createdMessage = await createMessage({
                 conversation,
                 messageData: req.body.postData
@@ -30,6 +26,7 @@ module.exports = {
                 conversation
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
@@ -88,6 +85,21 @@ module.exports = {
             res.status(200).send({
                 status: 'get conversations successful',
                 conversations
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    updateReadedUsers: async (req, res, next) => {
+        try {
+            const conversationId = req.params.id;
+            const userId = res.locals.userId;
+
+            const updatedConversation = await updateReadedConversation({ conversationId, userId });
+
+            res.status(200).send({
+                status: 'update conversation successful',
+                updatedConversation
             });
         } catch (error) {
             next(error);

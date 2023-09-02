@@ -114,6 +114,11 @@ class SocketService {
         socket.on('answer_call', (data) => {
             socket.to(this.user[data.senderId]).emit('answer_call', data);
         });
+
+        // Conversation
+        socket.on('deleted_conversation', (data) => {
+            socket.to(this.user[data.receiverId]).emit('deleted_conversation', data);
+        });
     };
 }
 

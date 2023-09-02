@@ -5,6 +5,7 @@ const { auth } = require('../middleware/auth');
 Router.get('/post/:id', auth, postCtrl.getPost);
 Router.get('/posts', auth, postCtrl.getPosts);
 Router.get('/posts/:id', auth, postCtrl.getUserPosts);
+Router.get('/posts/:id/saved', auth, postCtrl.getSavedPost);
 Router.get('/posts_discover', auth, postCtrl.getPostsDiscover);
 
 Router.post('/post', auth, postCtrl.createPost);

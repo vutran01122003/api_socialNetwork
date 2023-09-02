@@ -42,6 +42,6 @@ module.exports = {
     },
 
     deleteCommentService: async (commentId) => {
-        return Comment.deleteOne({ _id: commentId }).exec();
+        return Comment.findOneAndDelete({ _id: commentId }).exec();
     }
 };

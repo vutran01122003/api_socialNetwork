@@ -3,7 +3,8 @@ const conn = require('../config/userDB');
 
 const ConversationSchema = new mongoose.Schema(
     {
-        recipients: [{ type: mongoose.Types.ObjectId, ref: 'user' }]
+        recipients: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
+        readedUsers: [{ type: mongoose.Types.ObjectId, ref: 'user' }]
     },
     {
         timestamps: true

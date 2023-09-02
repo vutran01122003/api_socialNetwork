@@ -47,7 +47,7 @@ module.exports = {
     getSuggestedUser: async (req, res, next) => {
         try {
             const user = req.user;
-            const users = await getSuggestedUserSerive(user, 5);
+            const users = await getSuggestedUserSerive(user, 10);
 
             res.status(200).send({
                 status: 'get suggested users successfull',

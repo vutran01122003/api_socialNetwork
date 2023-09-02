@@ -10,7 +10,8 @@ const {
     savePostService,
     getPostsService,
     unsavePostService,
-    createPostService
+    createPostService,
+    getUserSavedPostsService
 } = require('../services/post.service');
 const ObjectId = require('mongoose').Types.ObjectId;
 
@@ -29,7 +30,6 @@ module.exports = {
             next(error);
         }
     },
-
     getPost: async (req, res, next) => {
         try {
             const postId = req.params.id;
@@ -52,7 +52,24 @@ module.exports = {
             next(error);
         }
     },
+    getSavedPost: async (req, res, next) => {
+        try {
+            const id = req.params.id;
+            const savedPosts = await getUserSavedPostsService({
+                userId: id,
+                queryUrl: req.query,
+                limit: 9
+            });
 
+            res.status(200).send({
+                status: 'save post successful',
+                savedPosts
+            });
+        } catch (error) {
+            console.log(error);
+            next(error);
+        }
+    },
     getPosts: async (req, res, next) => {
         try {
             const user = req.user;
@@ -73,7 +90,6 @@ module.exports = {
             next(error);
         }
     },
-
     getUserPosts: async (req, res, next) => {
         try {
             const id = req.params.id;
@@ -97,7 +113,6 @@ module.exports = {
             next(error);
         }
     },
-
     updatePost: async (req, res, next) => {
         try {
             const postId = req.body.data.postId;
@@ -117,7 +132,6 @@ module.exports = {
             next(error);
         }
     },
-
     deletePost: async (req, res, next) => {
         try {
             const postId = req.params.id;
@@ -134,7 +148,6 @@ module.exports = {
             next(error);
         }
     },
-
     likePost: async (req, res, next) => {
         try {
             const postId = req.params.id;
@@ -155,7 +168,6 @@ module.exports = {
             next(error);
         }
     },
-
     unlikePost: async (req, res, next) => {
         try {
             const postId = req.params.id;
@@ -174,12 +186,15 @@ module.exports = {
             next(error);
         }
     },
-
     getPostsDiscover: async (req, res, next) => {
         try {
             const user = req.user;
 
-            const posts = await getPostsDiscoverService(user);
+            const posts = await getPostsDiscoverService({
+                user,
+                queryUrl: req.query,
+                limit: 12
+            });
 
             res.status(200).send({
                 status: 'get posts discover successful',
@@ -189,7 +204,6 @@ module.exports = {
             next(error);
         }
     },
-
     savedPost: async (req, res, next) => {
         try {
             const postId = req.params.id;
@@ -197,20 +211,19 @@ module.exports = {
 
             if (!postId) throw createError('post not found');
 
-            const updatedUser = await savePostService({
+            const updatedPost = await savePostService({
                 userId,
                 postId
             });
 
             res.status(200).send({
                 status: 'post saved successfully',
-                user: updatedUser
+                updatedPost
             });
         } catch (error) {
             next(error);
         }
     },
-
     unSavedPost: async (req, res, next) => {
         try {
             const postId = req.params.id;
@@ -218,14 +231,14 @@ module.exports = {
 
             if (!postId) throw createError('post not found');
 
-            const updatedUser = await unsavePostService({
+            const updatedPost = await unsavePostService({
                 userId,
                 postId
             });
 
             res.status(200).send({
                 status: 'post unsaved successfully',
-                user: updatedUser
+                updatedPost
             });
         } catch (error) {
             next(error);

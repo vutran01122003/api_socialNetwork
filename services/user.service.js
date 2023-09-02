@@ -30,10 +30,6 @@ module.exports = {
                     path: 'following',
                     model: 'user',
                     select: 'fullname username avatar following'
-                },
-                {
-                    path: 'saved',
-                    model: 'post'
                 }
             ])
             .exec();
@@ -70,10 +66,6 @@ module.exports = {
                     path: 'following',
                     model: 'user',
                     select: 'fullname username avatar following'
-                },
-                {
-                    path: 'saved',
-                    model: 'post'
                 }
             ])
             .exec();
@@ -92,10 +84,6 @@ module.exports = {
                     path: 'following',
                     model: 'user',
                     select: 'fullname username avatar following'
-                },
-                {
-                    path: 'saved',
-                    model: 'post'
                 }
             ])
             .exec();
@@ -114,10 +102,6 @@ module.exports = {
                     path: 'following',
                     model: 'user',
                     select: 'fullname username avatar following'
-                },
-                {
-                    path: 'saved',
-                    model: 'post'
                 }
             ])
             .exec();
@@ -136,10 +120,6 @@ module.exports = {
                     path: 'following',
                     model: 'user',
                     select: 'fullname username avatar following'
-                },
-                {
-                    path: 'saved',
-                    model: 'post'
                 }
             ])
             .exec();

@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const conn = require('../config/userDB');
+const cloudinary = require('../utils/cloudinary');
 
 const PostSchema = new Schema(
     {
         content: {
             type: String,
             default: ''
+        },
+        saved: {
+            type: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
+            default: []
         },
         files: {
             type: Array,
@@ -27,16 +32,19 @@ const PostSchema = new Schema(
     }
 );
 
-PostSchema.pre('deleteOne', async function (next) {
+PostSchema.pre('findOneAndDelete', async function (next) {
     try {
         const postId = this.getQuery()._id;
         const Post = await this.model.findById(postId);
-
         const Comment = require('./Comment');
-
+        for (let file of Post.files) {
+            cloudinary.uploader.destroy(file.id, {
+                resource_type: file.url.includes('/video/') ? 'video' : 'image'
+            });
+        }
         // Bucket Partern can resolve but too late...
         for (let originCommentId of Post.comments) {
-            await Comment.deleteOne({ _id: originCommentId });
+            await Comment.findOneAndDelete({ _id: originCommentId });
         }
 
         next();
