@@ -37,5 +37,17 @@ module.exports = {
         } catch (error) {
             throw error;
         }
+    },
+    passwordValidation: async (password) => {
+        try {
+            const schema = Joi.object({
+                password: Joi.string().min(5).max(20).required()
+            });
+
+            const { error } = await schema.validate(password);
+            if (error) throw createError.BadRequest(error.details[0].message);
+        } catch (error) {
+            throw error;
+        }
     }
 };

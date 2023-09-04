@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const conn = require('../config/userDB');
-const cloudinary = require('../utils/cloudinary');
+const cloudinary = require('../config/cloudinary');
 
 const MessageSchema = new mongoose.Schema(
     {

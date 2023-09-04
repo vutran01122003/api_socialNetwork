@@ -22,7 +22,6 @@ module.exports = {
             await validation.registerValidation(req.body);
 
             const userCreated = await createUserService(req.body);
-            console.log(userCreated);
 
             const accessToken = await jwtService.signAccessToken(userCreated._id);
 

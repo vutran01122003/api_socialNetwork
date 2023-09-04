@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const conn = require('../config/userDB');
-const cloudinary = require('../utils/cloudinary');
+const cloudinary = require('../config/cloudinary');
 
 const PostSchema = new Schema(
     {

@@ -17,14 +17,6 @@ const io = new Server(server, {
     }
 });
 
-// const peerServer = ExpressPeerServer(server, {
-//     debug: true
-// });
-
-// peerServer.on('connection', (client) => {
-//     console.log('Client connected with peer ID:', client.getId());
-// });
-
 global._io = io;
 
 const PORT = process.env.PORT || 4000;
@@ -34,6 +26,7 @@ const postRouter = require('./routes/post.router');
 const commentRouter = require('./routes/comment.router');
 const notificationRouter = require('./routes/notification.router');
 const messageRouter = require('./routes/message.router');
+const passwordRouter = require('./routes/password.router');
 const SocketService = require('./services/socket.service');
 
 const options = { origin: process.env.DOMAIN_CLIENT, credentials: true };
@@ -51,6 +44,7 @@ app.use('/api', postRouter);
 app.use('/api', commentRouter);
 app.use('/api', notificationRouter);
 app.use('/api', messageRouter);
+app.use('/api', passwordRouter);
 
 global._io.on('connection', SocketService.connection);
 
