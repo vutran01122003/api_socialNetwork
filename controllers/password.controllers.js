@@ -23,10 +23,12 @@ module.exports = {
                 specialChars: false
             });
 
-            await client.set(email, otp);
+            await client.set(`otp:${email}`, otp, {
+                EX: 60
+            });
 
             await transporter.sendMail({
-                from: '"Smedia" <tranducvu234@gmail.com>',
+                from: `Smedia <tranducvu234@gmail.com>`,
                 to: email,
                 subject: '[Smedia] You have changed your new password',
                 html: `Your OTP: <b>${otp}</b>`
@@ -44,7 +46,7 @@ module.exports = {
     confirmCode: async (req, res, next) => {
         try {
             const { code, email, userId } = req.body;
-            const codeRef = await client.get(email);
+            const codeRef = await client.get(`otp:${email}`);
 
             if (codeRef === code) {
                 const token = await signAccessToken(userId);

@@ -12,6 +12,7 @@ class SocketService {
         socket.on('disconnect', () => {
             delete this.user[id];
             global._io.emit('user_online_list', this.user);
+            global._io.emit('disconnected_user', { userId: id });
         });
         // Create post
         socket.on('notification_createdPost', (createdNotification) => {
@@ -115,6 +116,13 @@ class SocketService {
             socket.to(this.user[data.senderId]).emit('answer_call', data);
         });
 
+        socket.on('play_video', (data) => {
+            socket.to(this.user[data.userId]).emit('play_remote_video', data);
+        });
+
+        socket.on('play_video_receiver', (data) => {
+            socket.to(this.user[data.receiverId]).emit('play_video_receiver', data);
+        });
         // Conversation
         socket.on('deleted_conversation', (data) => {
             socket.to(this.user[data.receiverId]).emit('deleted_conversation', data);

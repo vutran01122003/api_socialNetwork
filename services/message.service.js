@@ -6,14 +6,17 @@ module.exports = {
     getConversation: async ({ receiver, sender, populate }) => {
         const conversation = await Conversation.findOne({
             recipients: { $all: [receiver, sender] }
-        }).populate(populate);
+        })
+            .populate(populate)
+            .lean();
         return conversation;
     },
     getConversations: async ({ recipientId, populate, queryUrl, limit }) => {
         const conversations = await queryDB(
             Conversation.find({ recipients: recipientId })
                 .populate(populate)
-                .sort({ createdAt: -1 }),
+                .sort({ createdAt: -1 })
+                .lean(),
             queryUrl,
             limit
         );
@@ -46,7 +49,9 @@ module.exports = {
             {
                 new: true
             }
-        ).populate('recipients', 'username fullname avatar');
+        )
+            .populate('recipients', 'username fullname avatar')
+            .lean();
 
         return updatedConversation;
     },
@@ -64,11 +69,11 @@ module.exports = {
         return messages;
     },
     deleteMessage: async ({ messageId }) => {
-        const deletedMessage = await Message.findOneAndDelete({ _id: messageId });
+        const deletedMessage = await Message.findOneAndDelete({ _id: messageId }).lean();
         return deletedMessage;
     },
     deleteConversation: async ({ conversationId }) => {
-        const deletedConversation = await Conversation.findByIdAndDelete(conversationId);
+        const deletedConversation = await Conversation.findByIdAndDelete(conversationId).lean();
         const res = await Message.deleteMany({ conversationId });
         return deletedConversation;
     }

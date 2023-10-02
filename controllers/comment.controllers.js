@@ -67,7 +67,7 @@ module.exports = {
             const { postId, ...commentData } = req.body.commentData;
 
             await updateCommentService(commentData);
-            const post = await getPostService({ _id: postId });
+            const post = await getPostService({ postId });
 
             res.status(200).send({
                 status: 'edit comment successfully',

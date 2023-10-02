@@ -2,18 +2,18 @@ const Comment = require('../models/Comment');
 
 module.exports = {
     createCommentService: async (data) => {
-        return Comment.create(data);
+        return await Comment.create(data);
     },
 
     createReplyCommentService: async ({ originCommentId, createdCommentId }) => {
-        return Comment.findByIdAndUpdate(originCommentId, {
+        return await Comment.findByIdAndUpdate(originCommentId, {
             $push: { reply: createdCommentId }
-        });
+        }).lean();
     },
 
-    updateCommentService: async (commentData) => {
-        return Comment.findByIdAndUpdate(commentData.commentId, {
-            content: commentData.content
+    updateCommentService: async ({ commentId, content }) => {
+        return await Comment.findByIdAndUpdate(commentId, {
+            content: content
         });
     },
 
@@ -26,7 +26,7 @@ module.exports = {
                 }
             },
             { new: true }
-        );
+        ).lean();
     },
 
     updateUnlikedCommentService: async ({ commentId, userId }) => {
@@ -38,7 +38,7 @@ module.exports = {
                 }
             },
             { new: true }
-        );
+        ).lean();
     },
 
     deleteCommentService: async (commentId) => {

@@ -6,7 +6,9 @@ module.exports = {
         const users = queryDB(
             User.find({
                 username: { $regex: regex, $options: 'i' }
-            }).select(select),
+            })
+                .select(select)
+                .lean(),
             queryUrl,
             5
         );
@@ -14,7 +16,7 @@ module.exports = {
     },
 
     findOneUserService: async (filter) => {
-        return User.findOne(filter).exec();
+        return User.findOne(filter).lean();
     },
 
     getUserService: async (filter, select) => {
@@ -32,11 +34,11 @@ module.exports = {
                     select: 'fullname username avatar following'
                 }
             ])
-            .exec();
+            .lean();
     },
 
     getSuggestedUserSerive: async (user, limit) => {
-        return User.aggregate([
+        return await User.aggregate([
             {
                 $match: {
                     _id: { $nin: [user._id, ...user.following] }
@@ -48,13 +50,15 @@ module.exports = {
     },
 
     updateEditUserService: async ({ userId, userData }, select) => {
-        return User.findByIdAndUpdate(userId, userData, {
+        return await User.findByIdAndUpdate(userId, userData, {
             new: true
-        }).select(select);
+        })
+            .select(select)
+            .lean();
     },
 
     updateFollowerUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(userId, { $push: { followers: authId } }, { new: true })
+        return await User.findByIdAndUpdate(userId, { $push: { followers: authId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -68,11 +72,11 @@ module.exports = {
                     select: 'fullname username avatar following'
                 }
             ])
-            .exec();
+            .lean();
     },
 
     updateFollowingUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(authId, { $push: { following: userId } }, { new: true })
+        return await User.findByIdAndUpdate(authId, { $push: { following: userId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -86,11 +90,11 @@ module.exports = {
                     select: 'fullname username avatar following'
                 }
             ])
-            .exec();
+            .lean();
     },
 
     updateUnfollowerUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(userId, { $pull: { followers: authId } }, { new: true })
+        return await User.findByIdAndUpdate(userId, { $pull: { followers: authId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -104,11 +108,11 @@ module.exports = {
                     select: 'fullname username avatar following'
                 }
             ])
-            .exec();
+            .lean();
     },
 
     updateUnfollowingUserService: async ({ authId, userId }) => {
-        return User.findByIdAndUpdate(authId, { $pull: { following: userId } }, { new: true })
+        return await User.findByIdAndUpdate(authId, { $pull: { following: userId } }, { new: true })
             .select('-password')
             .populate([
                 {
@@ -122,6 +126,6 @@ module.exports = {
                     select: 'fullname username avatar following'
                 }
             ])
-            .exec();
+            .lean();
     }
 };

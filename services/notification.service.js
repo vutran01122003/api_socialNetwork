@@ -10,7 +10,9 @@ module.exports = {
         const notifications = await queryDB(
             Notification.find({
                 receiver: receiverId
-            }).sort({ createdAt: -1 }),
+            })
+                .sort({ createdAt: -1 })
+                .lean(),
             queryURL,
             limit
         );
@@ -22,7 +24,7 @@ module.exports = {
             notificationId,
             { $push: { readedUser: userId } },
             { new: true }
-        ).exec();
+        ).lean();
 
         return updatedNotification;
     },
@@ -32,7 +34,7 @@ module.exports = {
             {
                 $push: { readedUser: userId }
             }
-        ).exec();
+        ).lean();
 
         return readedAllNotifications;
     },
@@ -41,7 +43,7 @@ module.exports = {
             notificationId,
             { $pull: { readedUser: userId } },
             { new: true }
-        ).exec();
+        ).lean();
 
         return unreadedNotification;
     },
@@ -50,10 +52,10 @@ module.exports = {
             notificationId,
             { $pull: { receiver: userId } },
             { new: true }
-        );
+        ).lean();
 
         if (deletedNotification.receiver.length === 0) {
-            await Notification.findByIdAndDelete(notificationId);
+            await Notification.findByIdAndDelete(notificationId).lean();
         }
 
         return deletedNotification;
@@ -68,11 +70,11 @@ module.exports = {
                     receiver: userId
                 }
             }
-        ).exec();
+        ).lean();
 
         await Notification.deleteMany({
             receiver: { $size: 0 }
-        }).exec();
+        }).lean();
 
         return deletedAllNotifications;
     }

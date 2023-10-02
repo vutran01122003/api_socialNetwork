@@ -59,7 +59,7 @@ MessageSchema.pre('deleteMany', async function (next) {
                         resource_type: file.url.includes('/video/') ? 'video' : 'image'
                     })
                     .catch((e) => {
-                        console.log(e);
+                        next(e);
                     });
             }
         }
