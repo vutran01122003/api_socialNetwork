@@ -25,6 +25,7 @@ const commentRouter = require('./routes/comment.router');
 const notificationRouter = require('./routes/notification.router');
 const messageRouter = require('./routes/message.router');
 const passwordRouter = require('./routes/password.router');
+const marketplaceRouter = require('./routes/marketplace.router');
 const SocketService = require('./services/socket.service');
 
 const options = {
@@ -49,7 +50,7 @@ app.use('/api', commentRouter);
 app.use('/api', notificationRouter);
 app.use('/api', messageRouter);
 app.use('/api', passwordRouter);
-
+app.use('/api', marketplaceRouter);
 // Emmit event socket
 global._io.on('connection', SocketService.connection);
 
