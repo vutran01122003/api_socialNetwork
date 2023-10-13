@@ -47,10 +47,9 @@ module.exports = {
 
             res.status(200).send({
                 status: 'get keywords successful',
-                data: data.viewer.marketplace_search_typeahead_suggestions_v2
+                data: data?.viewer?.marketplace_search_typeahead_suggestions_v2 || []
             });
         } catch (error) {
-            console.log(error);
             next(error);
         }
     }

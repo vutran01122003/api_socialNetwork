@@ -6,6 +6,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const helmet = require('helmet');
+const morgan = require('morgan');
 const app = express();
 const server = http.createServer(app);
 
@@ -28,14 +29,21 @@ const passwordRouter = require('./routes/password.router');
 const marketplaceRouter = require('./routes/marketplace.router');
 const SocketService = require('./services/socket.service');
 
-const options = {
-    origin: process.env.DOMAIN_CLIENT,
+// Middleware
+const whitelist = [process.env.DOMAIN_CLIENT, process.env.DOMAIN_CLIENT_SSL];
+var corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 };
 
-// Middleware
-
-app.use(cors(options));
+app.use(cors(corsOptions));
+app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
@@ -64,6 +72,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     if (err) {
+        console.log(err);
         res.status(err.status).send({
             status: err.status,
             msg: err.message,
