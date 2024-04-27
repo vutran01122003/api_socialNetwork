@@ -7,8 +7,10 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const helmet = require('helmet');
 const morgan = require('morgan');
+
 const app = express();
 const server = http.createServer(app);
+require('./dbs/database.connection').getInstance().connect();
 
 const io = new Server(server, {
     cors: {
@@ -16,18 +18,11 @@ const io = new Server(server, {
         credentials: true
     }
 });
-
 global._io = io;
 
-const authRouter = require('./routes/auth.router');
-const userRouter = require('./routes/user.router');
-const postRouter = require('./routes/post.router');
-const commentRouter = require('./routes/comment.router');
-const notificationRouter = require('./routes/notification.router');
-const messageRouter = require('./routes/message.router');
-const passwordRouter = require('./routes/password.router');
-const marketplaceRouter = require('./routes/marketplace.router');
+// Emmit event socket
 const SocketService = require('./services/socket.service');
+global._io.on('connection', SocketService.connection);
 
 // Middleware
 const whitelist = [process.env.DOMAIN_CLIENT, process.env.DOMAIN_CLIENT_SSL];
@@ -51,16 +46,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Router
-app.use('/api', authRouter);
-app.use('/api', userRouter);
-app.use('/api', postRouter);
-app.use('/api', commentRouter);
-app.use('/api', notificationRouter);
-app.use('/api', messageRouter);
-app.use('/api', passwordRouter);
-app.use('/api', marketplaceRouter);
-// Emmit event socket
-global._io.on('connection', SocketService.connection);
+app.use('/api', require('./routes/auth.router'));
+app.use('/api', require('./routes/user.router'));
+app.use('/api', require('./routes/post.router'));
+app.use('/api', require('./routes/comment.router'));
+app.use('/api', require('./routes/notification.router'));
+app.use('/api', require('./routes/message.router'));
+app.use('/api', require('./routes/password.router'));
+app.use('/api', require('./routes/marketplace.router'));
 
 // Catch error
 app.use((req, res, next) => {
@@ -72,7 +65,6 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     if (err) {
-        console.log(err);
         res.status(err.status).send({
             status: err.status,
             msg: err.message,

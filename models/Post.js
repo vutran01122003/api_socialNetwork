@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const conn = require('../config/userDB');
+const conn = require('../dbs/database.connection').getInstance().getConnection();
 const cloudinary = require('../config/cloudinary');
 
 const PostSchema = new Schema(

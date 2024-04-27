@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const conn = require('../config/userDB');
+const conn = require('../dbs/database.connection').getInstance().getConnection();
 
 const UserSchema = new mongoose.Schema(
     {
@@ -32,8 +32,7 @@ const UserSchema = new mongoose.Schema(
         },
         avatar: {
             type: String,
-            default:
-                'https://res.cloudinary.com/dzm0nupxy/image/upload/v1686510558/avatar/avatar_cvjdqk.jpg'
+            default: 'https://res.cloudinary.com/dzm0nupxy/image/upload/v1686510558/avatar/avatar_cvjdqk.jpg'
         },
         phone: {
             type: String,
