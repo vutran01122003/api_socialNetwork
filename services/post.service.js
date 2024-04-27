@@ -60,9 +60,9 @@ module.exports = {
             .lean();
     },
 
-    getPostsService: async ({ user, queryUrl }) => {
+    getPostsService: async ({ queryUrl }) => {
         return queryDB(
-            Post.find({ user })
+            Post.find()
                 .sort({ createdAt: -1 })
                 .populate([
                     {
@@ -77,7 +77,7 @@ module.exports = {
                     },
                     {
                         path: 'comments',
-                        options: { sort: { createdAt: -1 } },
+                        options: { sort: { createdAt: -1 }, limit: 2 },
                         populate: [
                             {
                                 path: 'user',
@@ -174,11 +174,7 @@ module.exports = {
     },
 
     getUserSavedPostsService: async ({ userId, queryUrl, limit }) => {
-        const savedPosts = await queryDB(
-            Post.find({ saved: userId }).sort({ createdAt: -1 }).lean(),
-            queryUrl,
-            limit
-        );
+        const savedPosts = await queryDB(Post.find({ saved: userId }).sort({ createdAt: -1 }).lean(), queryUrl, limit);
 
         return savedPosts;
     },

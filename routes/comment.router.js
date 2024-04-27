@@ -2,6 +2,7 @@ const router = require('express').Router();
 const commentCtrl = require('../controllers/comment.controllers');
 const { auth } = require('../middleware/auth');
 
+router.get('/post/:postId/comments', auth, commentCtrl.getComments);
 router.post('/comment', auth, commentCtrl.createComment);
 
 router.patch('/comment', auth, commentCtrl.updateComment);

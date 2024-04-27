@@ -33,7 +33,6 @@ module.exports = {
     getPost: async (req, res, next) => {
         try {
             const postId = req.params.id;
-
             if (!postId) throw createError.NotFound('post not found');
 
             if (!ObjectId.isValid(postId)) throw createError.NotFound('post not found');
@@ -71,11 +70,12 @@ module.exports = {
     },
     getPosts: async (req, res, next) => {
         try {
-            const user = req.user;
-
+            const { page, currentQuantity } = req.query;
             const posts = await getPostsService({
-                user: [user._id, ...user.following],
-                queryUrl: req.query
+                queryUrl: {
+                    page,
+                    currentQuantity
+                }
             });
 
             if (!posts) throw createError.NotFound('posts not found');

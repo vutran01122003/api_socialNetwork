@@ -1,4 +1,5 @@
 const {
+    getCommentsService,
     createCommentService,
     createReplyCommentService,
     deleteCommentService,
@@ -6,6 +7,7 @@ const {
     updateLikedCommentService,
     updateUnlikedCommentService
 } = require('../services/comment.service');
+
 const {
     findUpdatedPost,
     getPostOfCreatedCommentService,
@@ -14,6 +16,22 @@ const {
 } = require('../services/post.service');
 
 module.exports = {
+    getComments: async (req, res, next) => {
+        try {
+            const postData = await getCommentsService({
+                postId: req.params.postId,
+                commentQuantity: req.query.commentQuantity
+            });
+
+            res.status(200).send({
+                status: 'get comments successful',
+                commentsData: postData[0].comments
+            });
+        } catch (error) {
+            console.log(error);
+            next(error);
+        }
+    },
     createComment: async (req, res, next) => {
         try {
             const { postId, ...commentData } = req.body.commentData;
