@@ -14,6 +14,6 @@ const conn = MONGO_INITDB_HOST
           pass: MONGO_INITDB_ROOT_PASSWORD,
           dbName: MONGO_INITDB_DATABASE
       })
-    : connectMongoDB(`mongodb://localhost:27017/social_media`);
+    : connectMongoDB(`mongodb://127.0.0.1:27017/social_media`);
 
 module.exports = conn;

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const conn = require('../config/userDB');
+const conn = require('../dbs/database.connection').getInstance().getConnection();
 const cloudinary = require('../config/cloudinary');
 
 const MessageSchema = new mongoose.Schema(

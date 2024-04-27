@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const conn = require('../config/userDB');
+const conn = require('../dbs/database.connection').getInstance().getConnection();
 
 const ConversationSchema = new mongoose.Schema(
     {

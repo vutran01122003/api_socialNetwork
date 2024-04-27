@@ -1,4 +1,4 @@
-const conn = require('../config/userDB');
+const conn = require('../dbs/database.connection').getInstance().getConnection();
 const { Schema } = require('mongoose');
 
 const CommentSchema = new Schema(
