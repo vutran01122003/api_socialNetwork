@@ -16,6 +16,11 @@ module.exports = {
                             select: 'username fullname avatar'
                         },
                         {
+                            path: 'originalCommenter',
+                            model: 'user',
+                            select: 'username fullname avatar'
+                        },
+                        {
                             path: 'reply',
                             model: 'comment',
                             options: { sort: { createdAt: -1 } },
@@ -23,6 +28,11 @@ module.exports = {
                             populate: [
                                 {
                                     path: 'user',
+                                    model: 'user',
+                                    select: 'username fullname avatar'
+                                },
+                                {
+                                    path: 'originalCommenter',
                                     model: 'user',
                                     select: 'username fullname avatar'
                                 },
@@ -39,8 +49,60 @@ module.exports = {
             .select('comments')
             .lean();
     },
+
+    getRepliesService: async ({ postId, commentId, replyQuantity }) => {
+        try {
+            const post = await Post.findById(postId).populate({
+                path: 'comments',
+                model: 'comment'
+            });
+
+            const comment = post.comments.find((comment) => comment._id.toString() === commentId);
+            const populatedComment = await comment.populate({
+                path: 'reply',
+                options: { sort: { createdAt: -1 }, limit: 5, skip: replyQuantity },
+                select: 'user originalCommenter content likes createdAt',
+                populate: [
+                    {
+                        path: 'user',
+                        model: 'user',
+                        select: 'username fullname avatar'
+                    },
+                    {
+                        path: 'originalCommenter',
+                        model: 'user',
+                        select: 'username fullname avatar'
+                    },
+                    {
+                        path: 'likes',
+                        model: 'user',
+                        select: 'username fullname avatar'
+                    }
+                ]
+            });
+
+            return populatedComment.reply;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     createCommentService: async (data) => {
-        return await Comment.create(data);
+        const comment = new Comment(data);
+        comment.populate([
+            {
+                path: 'user',
+                model: 'user',
+                select: 'username fullname avatar'
+            },
+            {
+                path: 'originalCommenter',
+                model: 'user',
+                select: 'username fullname avatar'
+            }
+        ]);
+        await comment.save();
+        return comment;
     },
 
     createReplyCommentService: async ({ originCommentId, createdCommentId }) => {

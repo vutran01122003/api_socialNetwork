@@ -3,6 +3,8 @@ const commentCtrl = require('../controllers/comment.controllers');
 const { auth } = require('../middleware/auth');
 
 router.get('/post/:postId/comments', auth, commentCtrl.getComments);
+router.get('/post/:postId/comments/:commentId', auth, commentCtrl.getReplyComments);
+
 router.post('/comment', auth, commentCtrl.createComment);
 
 router.patch('/comment', auth, commentCtrl.updateComment);

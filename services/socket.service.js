@@ -18,9 +18,7 @@ class SocketService {
         socket.on('notification_createdPost', (createdNotification) => {
             Object.keys(this.user).forEach((userIdKey) => {
                 if (createdNotification.receiver.includes(userIdKey)) {
-                    socket
-                        .to(this.user[userIdKey])
-                        .emit('notification_createdPost', createdNotification);
+                    socket.to(this.user[userIdKey]).emit('notification_createdPost', createdNotification);
                 }
             });
         });
@@ -45,19 +43,15 @@ class SocketService {
         });
 
         socket.on('notification_liked', (createdNotification) => {
-            socket
-                .to(this.user[createdNotification.postOwnerId])
-                .emit('notification_liked', createdNotification);
+            socket.to(this.user[createdNotification.postOwnerId]).emit('notification_liked', createdNotification);
         });
 
         // Comment
-        socket.on('comment', (newPost) => {
-            const ids = [...newPost.user.followers, newPost.user._id];
-            Object.keys(this.user).forEach((userIdKey) => {
-                if (ids.includes(userIdKey)) {
-                    socket.to(this.user[userIdKey]).emit('created_comment', newPost);
-                }
-            });
+        socket.on('comment', ({ postId, newComment, postOwnerId, originCommentId }) => {
+            const userIdKeyList = Object.keys(this.user);
+            if (userIdKeyList.includes(postOwnerId)) {
+                socket.to(this.user[postOwnerId]).emit('created_comment', { postId, newComment, originCommentId });
+            }
         });
 
         socket.on('delete_comment', (newPost) => {
@@ -86,9 +80,7 @@ class SocketService {
 
         // Save
         socket.on('notification_saved', (createdNotification) => {
-            socket
-                .to(this.user[createdNotification.postOwnerId])
-                .emit('notification_saved', createdNotification);
+            socket.to(this.user[createdNotification.postOwnerId]).emit('notification_saved', createdNotification);
         });
 
         // Follow

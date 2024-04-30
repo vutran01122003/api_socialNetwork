@@ -5,7 +5,8 @@ const {
     deleteCommentService,
     updateCommentService,
     updateLikedCommentService,
-    updateUnlikedCommentService
+    updateUnlikedCommentService,
+    getRepliesService
 } = require('../services/comment.service');
 
 const {
@@ -24,7 +25,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'get comments successful',
+                status: 'Get comments successful',
                 commentsData: postData[0].comments
             });
         } catch (error) {
@@ -32,6 +33,27 @@ module.exports = {
             next(error);
         }
     },
+
+    getReplyComments: async (req, res, next) => {
+        try {
+            const { postId, commentId } = req.params;
+            const replyQuantity = req.query.replyQuantity;
+
+            const replyData = await getRepliesService({
+                postId,
+                commentId,
+                replyQuantity
+            });
+
+            res.status(200).send({
+                status: 'Get replies successful',
+                replyData
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     createComment: async (req, res, next) => {
         try {
             const { postId, ...commentData } = req.body.commentData;
@@ -52,8 +74,8 @@ module.exports = {
             }
 
             res.status(200).send({
-                status: 'successful comment',
-                newPost: updatedPost
+                status: 'Successful comment',
+                newComment: createdComment
             });
         } catch (error) {
             next(error);
@@ -72,7 +94,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'comment deleted successfully',
+                status: 'Comment deleted successfully',
                 newPost: updatedPost
             });
         } catch (error) {
@@ -88,7 +110,7 @@ module.exports = {
             const post = await getPostService({ postId });
 
             res.status(200).send({
-                status: 'edit comment successfully',
+                status: 'Edit comment successfully',
                 newPost: post
             });
         } catch (error) {
@@ -108,7 +130,7 @@ module.exports = {
             const post = await getPostService({ postId });
 
             res.status(200).send({
-                status: 'like comment successful',
+                status: 'Like comment successful',
                 newPost: post
             });
         } catch (error) {
@@ -128,7 +150,7 @@ module.exports = {
             const post = await getPostService({ postId });
 
             res.status(200).send({
-                status: 'unlike comment successful',
+                status: 'Unlike comment successful',
                 newPost: post
             });
         } catch (error) {

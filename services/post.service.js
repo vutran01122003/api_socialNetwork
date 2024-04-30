@@ -92,11 +92,16 @@ module.exports = {
                             {
                                 path: 'reply',
                                 model: 'comment',
-                                options: { sort: { createdAt: -1 } },
-                                select: 'user content likes createdAt',
+                                options: { sort: { createdAt: -1 }, limit: 2 },
+                                select: 'user content originalCommenter likes createdAt',
                                 populate: [
                                     {
                                         path: 'user',
+                                        model: 'user',
+                                        select: 'username fullname avatar'
+                                    },
+                                    {
+                                        path: 'originalCommenter',
                                         model: 'user',
                                         select: 'username fullname avatar'
                                     },

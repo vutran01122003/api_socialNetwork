@@ -46,7 +46,7 @@ module.exports = {
             const { data } = await response.json();
 
             res.status(200).send({
-                status: 'get keywords successful',
+                status: 'Get keywords successful',
                 data: data?.viewer?.marketplace_search_typeahead_suggestions_v2 || []
             });
         } catch (error) {

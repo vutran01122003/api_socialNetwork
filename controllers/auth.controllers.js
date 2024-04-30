@@ -1,11 +1,7 @@
 const createError = require('http-errors');
 const validation = require('../helper/validation');
 const jwtService = require('../services/jwt.service');
-const {
-    getUserService,
-    populateUserService,
-    createUserService
-} = require('../services/auth.service');
+const { getUserService, populateUserService, createUserService } = require('../services/auth.service');
 
 module.exports = {
     register: async (req, res, next) => {
@@ -100,7 +96,7 @@ module.exports = {
                     maxAge: 365 * 24 * 60 * 60 * 1000
                 })
                 .send({
-                    status: 'refresh token success',
+                    status: 'Refresh token success',
                     user,
                     token: {
                         accessToken,
@@ -119,7 +115,7 @@ module.exports = {
 
             const user = await populateUserService({ _id: id }, '-password');
 
-            if (!user) throw createError.NotFound('user not exists');
+            if (!user) throw createError.NotFound('User not exists');
             return res.status(200).send({
                 user,
                 token: {

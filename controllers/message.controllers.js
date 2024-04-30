@@ -21,7 +21,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'create message successful',
+                status: 'Create message successful',
                 createdMessage,
                 conversation
             });
@@ -41,7 +41,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'get messages successful',
+                status: 'Get messages successful',
                 messages
             });
         } catch (error) {
@@ -62,7 +62,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'get conversation successful',
+                status: 'Get conversation successful',
                 conversation
             });
         } catch (error) {
@@ -82,7 +82,7 @@ module.exports = {
                 limit: 10
             });
             res.status(200).send({
-                status: 'get conversations successful',
+                status: 'Get conversations successful',
                 conversations
             });
         } catch (error) {
@@ -97,7 +97,7 @@ module.exports = {
             const updatedConversation = await updateReadedConversation({ conversationId, userId });
 
             res.status(200).send({
-                status: 'update conversation successful',
+                status: 'Update conversation successful',
                 updatedConversation
             });
         } catch (error) {
@@ -110,7 +110,7 @@ module.exports = {
             const deletedMessage = await deleteMessage({ messageId });
 
             res.status(200).send({
-                status: 'delete message successful',
+                status: 'Delete message successful',
                 deletedMessage
             });
         } catch (error) {
@@ -123,7 +123,7 @@ module.exports = {
 
             const deletedConversation = await deleteConversation({ conversationId });
             res.status(200).send({
-                status: 'delete conversation successful',
+                status: 'Delete conversation successful',
                 deletedConversation
             });
         } catch (error) {
