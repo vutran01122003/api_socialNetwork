@@ -36,7 +36,7 @@ module.exports = {
             if (!ObjectId.isValid(id)) throw createError.NotFound('user not found');
 
             const user = await getUserService({ _id: id }, '-password');
-            if (!user) throw createError.NotFound('user not found');
+            if (!user) throw createError.NotFound('User not found');
 
             res.status(200).send({ user });
         } catch (error) {
@@ -50,7 +50,7 @@ module.exports = {
             const users = await getSuggestedUserSerive(user, 10);
 
             res.status(200).send({
-                status: 'get suggested users successfull',
+                status: 'Get suggested users successfully',
                 suggestedUsers: users
             });
         } catch (error) {
@@ -70,7 +70,7 @@ module.exports = {
             if (check?._id.toString() !== id && check)
                 // Compare id's check and id's patch if equal then ignore else notify conflict
                 // Check check variable has value or null
-                throw createError.Conflict('username already exists');
+                throw createError.Conflict('Username already exists');
 
             await validation.editProfileValidation(userData);
 
@@ -83,7 +83,7 @@ module.exports = {
             );
 
             res.status(200).send({
-                status: 'update user success',
+                status: 'Update user successfully',
                 user: updatedUser
             });
         } catch (error) {

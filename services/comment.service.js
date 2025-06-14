@@ -2,74 +2,41 @@ const Comment = require('../models/Comment');
 const Post = require('../models/Post');
 
 module.exports = {
-    getCommentsService: async ({ postId, commentQuantity }) => {
-        return await Post.find({ _id: postId })
+    getCommentsService: async ({ postId, commentQuantity, limit }) => {
+        return await Comment.find({ postId: postId, parentCommentId: { $exists: false } })
             .sort({ createdAt: -1 })
+            .skip(commentQuantity)
+            .limit(limit)
             .populate([
                 {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 }, limit: 5, skip: commentQuantity },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'originalCommenter',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'originalCommenter',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
+                    path: 'user',
+                    model: 'user',
+                    select: 'username fullname avatar'
+                },
+                {
+                    path: 'likes',
+                    model: 'user',
+                    select: 'username fullname avatar'
                 }
-            ])
-            .select('comments')
-            .lean();
+            ]);
     },
 
-    getRepliesService: async ({ postId, commentId, replyQuantity }) => {
+    getRepliesService: async ({ postId, commentId, replyQuantity, limit }) => {
         try {
-            const post = await Post.findById(postId).populate({
-                path: 'comments',
-                model: 'comment'
-            });
-
-            const comment = post.comments.find((comment) => comment._id.toString() === commentId);
-            const populatedComment = await comment.populate({
-                path: 'reply',
-                options: { sort: { createdAt: -1 }, limit: 5, skip: replyQuantity },
-                select: 'user originalCommenter content likes createdAt',
-                populate: [
+            const replies = await Comment.find({
+                postId,
+                parentCommentId: commentId
+            })
+                .skip(replyQuantity)
+                .limit(limit)
+                .populate([
                     {
                         path: 'user',
                         model: 'user',
                         select: 'username fullname avatar'
                     },
                     {
-                        path: 'originalCommenter',
+                        path: 'userRef',
                         model: 'user',
                         select: 'username fullname avatar'
                     },
@@ -78,43 +45,61 @@ module.exports = {
                         model: 'user',
                         select: 'username fullname avatar'
                     }
-                ]
-            });
+                ])
+                .lean();
 
-            return populatedComment.reply;
+            return replies;
         } catch (error) {
             throw error;
         }
     },
 
     createCommentService: async (data) => {
-        const comment = new Comment(data);
-        comment.populate([
+        const parentCommentId = data?.parentCommentId;
+        const result = await Promise.all([
+            parentCommentId
+                ? Comment.findByIdAndUpdate(parentCommentId, {
+                      $inc: { numberOfChildComment: 1 }
+                  })
+                : null,
+            Comment.create(parentCommentId ? data : { ...data, numberOfChildComment: 0 })
+        ]);
+
+        await result[1].populate({
+            path: 'user',
+            model: 'user',
+            select: 'username fullname avatar'
+        });
+
+        return result[1];
+    },
+
+    updateCommentService: async ({ commentId, content }) => {
+        return await Comment.findByIdAndUpdate(
+            commentId,
+            {
+                content: content
+            },
+            {
+                new: true
+            }
+        ).populate([
             {
                 path: 'user',
                 model: 'user',
                 select: 'username fullname avatar'
             },
             {
-                path: 'originalCommenter',
+                path: 'likes',
+                model: 'user',
+                select: 'username fullname avatar'
+            },
+            {
+                path: 'userRef',
                 model: 'user',
                 select: 'username fullname avatar'
             }
         ]);
-        await comment.save();
-        return comment;
-    },
-
-    createReplyCommentService: async ({ originCommentId, createdCommentId }) => {
-        return await Comment.findByIdAndUpdate(originCommentId, {
-            $push: { reply: createdCommentId }
-        }).lean();
-    },
-
-    updateCommentService: async ({ commentId, content }) => {
-        return await Comment.findByIdAndUpdate(commentId, {
-            content: content
-        });
     },
 
     updateLikedCommentService: async ({ commentId, userId }) => {

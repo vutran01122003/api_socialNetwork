@@ -1,7 +1,7 @@
-const createError = require('http-errors');
-const validation = require('../helper/validation');
-const jwtService = require('../services/jwt.service');
-const { getUserService, populateUserService, createUserService } = require('../services/auth.service');
+const createError = require("http-errors");
+const validation = require("../helper/validation");
+const jwtService = require("../services/jwt.service");
+const { getUserService, populateUserService, createUserService } = require("../services/auth.service");
 
 module.exports = {
     register: async (req, res, next) => {
@@ -11,9 +11,9 @@ module.exports = {
             const checkEmail = await getUserService({ email });
             const checkUsername = await getUserService({ username });
 
-            if (!email || !password) throw createError.BadRequest('empty email or password');
-            if (checkEmail) throw createError.Conflict('email was exists');
-            if (checkUsername) throw createError.Conflict('username was exists');
+            if (!email || !password) throw createError.BadRequest("empty email or password");
+            if (checkEmail) throw createError.Conflict("email was exists");
+            if (checkUsername) throw createError.Conflict("username was exists");
 
             await validation.registerValidation(req.body);
 
@@ -24,14 +24,14 @@ module.exports = {
             const refreshToken = await jwtService.signRefreshToken(userCreated._id);
 
             res.status(200)
-                .cookie('accessToken', accessToken, {
-                    httpOnly: 'true'
+                .cookie("accessToken", accessToken, {
+                    httpOnly: "true"
                 })
-                .cookie('refreshToken', refreshToken, {
-                    httpOnly: 'true'
+                .cookie("refreshToken", refreshToken, {
+                    httpOnly: "true"
                 })
                 .send({
-                    status: 'register success',
+                    status: "register success",
                     user: userCreated,
                     token: {
                         accessToken,
@@ -48,11 +48,11 @@ module.exports = {
 
             const user = await populateUserService({ email });
 
-            if (!email || !password) throw createError.BadRequest('empty email or password');
-            if (!user) throw createError.NotFound('email does not exists');
+            if (!email || !password) throw createError.BadRequest("empty email or password");
+            if (!user) throw createError.NotFound("email does not exists");
             const isValid = user.checkPassword(password);
             if (!isValid) {
-                throw createError.Unauthorized('password is incorrect');
+                throw createError.Unauthorized("password is incorrect");
             }
 
             const accessToken = await jwtService.signAccessToken(user._id);
@@ -60,14 +60,18 @@ module.exports = {
             const refreshToken = await jwtService.signRefreshToken(user._id);
 
             res.status(200)
-                .cookie('accessToken', accessToken, {
-                    httpOnly: 'true'
+                .cookie("accessToken", accessToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "None"
                 })
-                .cookie('refreshToken', refreshToken, {
-                    httpOnly: 'true'
+                .cookie("refreshToken", refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "None"
                 })
                 .send({
-                    status: 'login success',
+                    status: "login success",
                     user,
                     token: {
                         accessToken,
@@ -82,21 +86,21 @@ module.exports = {
         try {
             const id = res.locals.userId;
 
-            const user = await populateUserService({ _id: id }, '-password');
+            const user = await populateUserService({ _id: id }, "-password");
 
             const accessToken = await jwtService.signAccessToken(id);
             const refreshToken = await jwtService.signRefreshToken(id);
 
             res.status(200)
-                .cookie('accessToken', accessToken, {
-                    httpOnly: 'true'
+                .cookie("accessToken", accessToken, {
+                    httpOnly: "true"
                 })
-                .cookie('refreshToken', refreshToken, {
-                    httpOnly: 'true',
+                .cookie("refreshToken", refreshToken, {
+                    httpOnly: "true",
                     maxAge: 365 * 24 * 60 * 60 * 1000
                 })
                 .send({
-                    status: 'Refresh token success',
+                    status: "Refresh token success",
                     user,
                     token: {
                         accessToken,
@@ -113,9 +117,9 @@ module.exports = {
             const accessToken = req.cookies.accessToken;
             const refreshToken = req.cookies.refreshToken;
 
-            const user = await populateUserService({ _id: id }, '-password');
+            const user = await populateUserService({ _id: id }, "-password");
 
-            if (!user) throw createError.NotFound('User not exists');
+            if (!user) throw createError.NotFound("User not exists");
             return res.status(200).send({
                 user,
                 token: {
@@ -128,6 +132,6 @@ module.exports = {
         }
     },
     logout: async (req, res) => {
-        res.clearCookie('accessToken').clearCookie('refreshToken').send('success logout');
+        res.clearCookie("accessToken").clearCookie("refreshToken").send("success logout");
     }
 };

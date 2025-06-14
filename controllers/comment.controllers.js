@@ -1,7 +1,6 @@
 const {
     getCommentsService,
     createCommentService,
-    createReplyCommentService,
     deleteCommentService,
     updateCommentService,
     updateLikedCommentService,
@@ -10,23 +9,24 @@ const {
 } = require('../services/comment.service');
 
 const {
-    findUpdatedPost,
-    getPostOfCreatedCommentService,
     getPostService,
-    getPostOfDeletedCommentService
+    increaseNumberOfCommentService,
+    decreaseNumberOfCommentService
 } = require('../services/post.service');
 
 module.exports = {
     getComments: async (req, res, next) => {
         try {
-            const postData = await getCommentsService({
+            const { commentQuantity, limit } = req.query;
+            const comments = await getCommentsService({
                 postId: req.params.postId,
-                commentQuantity: req.query.commentQuantity
+                commentQuantity,
+                limit
             });
 
             res.status(200).send({
                 status: 'Get comments successful',
-                commentsData: postData[0].comments
+                data: comments
             });
         } catch (error) {
             console.log(error);
@@ -37,12 +37,13 @@ module.exports = {
     getReplyComments: async (req, res, next) => {
         try {
             const { postId, commentId } = req.params;
-            const replyQuantity = req.query.replyQuantity;
+            const { replyQuantity, limit } = req.query;
 
             const replyData = await getRepliesService({
                 postId,
                 commentId,
-                replyQuantity
+                replyQuantity,
+                limit
             });
 
             res.status(200).send({
@@ -50,31 +51,19 @@ module.exports = {
                 replyData
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
 
     createComment: async (req, res, next) => {
         try {
-            const { postId, ...commentData } = req.body.commentData;
+            const commentData = req.body.commentData;
             const createdComment = await createCommentService(commentData);
-            let updatedPost = null;
-
-            if (commentData.originCommentId) {
-                await createReplyCommentService({
-                    originCommentId: commentData.originCommentId,
-                    createdCommentId: createdComment._id
-                });
-                updatedPost = await findUpdatedPost(postId);
-            } else {
-                updatedPost = await getPostOfCreatedCommentService({
-                    postId,
-                    createdCommentId: createdComment._id
-                });
-            }
+            await increaseNumberOfCommentService({ postId: commentData.postId });
 
             res.status(200).send({
-                status: 'Successful comment',
+                status: 'create comment successful',
                 newComment: createdComment
             });
         } catch (error) {
@@ -85,19 +74,14 @@ module.exports = {
     deleteComment: async (req, res, next) => {
         try {
             const { postId, commentId } = req.body.data.commentData;
-
-            const deletedComment = await deleteCommentService(commentId);
-
-            const updatedPost = await getPostOfDeletedCommentService({
-                postId,
-                deletedCommentId: deletedComment._id
-            });
+            await decreaseNumberOfCommentService({ postId: postId });
+            await deleteCommentService(commentId);
 
             res.status(200).send({
-                status: 'Comment deleted successfully',
-                newPost: updatedPost
+                status: 'Comment deleted successfully'
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
@@ -106,14 +90,14 @@ module.exports = {
         try {
             const { postId, ...commentData } = req.body.commentData;
 
-            await updateCommentService(commentData);
-            const post = await getPostService({ postId });
+            const updatedComment = await updateCommentService(commentData);
 
             res.status(200).send({
                 status: 'Edit comment successfully',
-                newPost: post
+                data: updatedComment
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },

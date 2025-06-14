@@ -23,7 +23,7 @@ module.exports = {
             const createdPost = await createPostService(postData);
 
             res.status(200).send({
-                status: 'post created successfully',
+                status: 'Post created successfullyly',
                 postData: createdPost
             });
         } catch (error) {
@@ -33,19 +33,19 @@ module.exports = {
     getPost: async (req, res, next) => {
         try {
             const postId = req.params.id;
-            if (!postId) throw createError.NotFound('post not found');
+            if (!postId) throw createError.NotFound('Post not found');
 
-            if (!ObjectId.isValid(postId)) throw createError.NotFound('post not found');
+            if (!ObjectId.isValid(postId)) throw createError.NotFound('Post not found');
 
             const post = await getPostService({ postId });
 
             if (post) {
                 res.status(200).send({
-                    status: 'successful',
+                    status: 'Get post successfully',
                     post
                 });
             } else {
-                throw createError.NotFound('post not found');
+                throw createError.NotFound('Post not found');
             }
         } catch (error) {
             next(error);
@@ -61,7 +61,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'save post successful',
+                status: 'save post successfully',
                 savedPosts
             });
         } catch (error) {
@@ -78,10 +78,10 @@ module.exports = {
                 }
             });
 
-            if (!posts) throw createError.NotFound('posts not found');
+            if (!posts) throw createError.NotFound('Posts not found');
 
             res.send({
-                status: 'get posts successfully',
+                status: 'Get posts successfully',
                 posts,
                 result: posts.length
             });
@@ -93,7 +93,7 @@ module.exports = {
         try {
             const id = req.params.id;
 
-            if (!id) throw createError.NotFound('user not found');
+            if (!id) throw createError.NotFound('User not found');
 
             const posts = await getUserPostsService({
                 userId: id,
@@ -101,10 +101,10 @@ module.exports = {
                 limit: 9
             });
 
-            if (!posts) throw createError.NotFound('posts not found');
+            if (!posts) throw createError.NotFound('Posts not found');
 
             res.send({
-                status: 'get user posts successfully',
+                status: 'Get posts successfully',
                 posts,
                 result: posts.length
             });
@@ -116,15 +116,15 @@ module.exports = {
         try {
             const postId = req.body.data.postId;
 
-            if (!postId) throw createError.NotFound('post not found');
+            if (!postId) throw createError.NotFound('Post not found');
 
             const updatedData = req.body.data.updatedData;
             const newPost = await updatePostService({ postId, updatedData });
 
-            if (!newPost) throw createError.NotFound('post not found');
+            if (!newPost) throw createError.NotFound('Post not found');
 
             res.status(200).send({
-                status: 'post update successful',
+                status: 'Post update successfully',
                 postData: newPost
             });
         } catch (error) {
@@ -135,15 +135,16 @@ module.exports = {
         try {
             const postId = req.params.id;
 
-            if (!postId) throw createError.NotFound('post not found');
+            if (!postId) throw createError.NotFound('Post not found');
 
             const deletedPost = await deletePostService(postId);
 
             res.status(200).send({
-                status: 'post delete successful',
+                status: 'post delete successfully',
                 postData: deletedPost
             });
         } catch (error) {
+            console.log(error);
             next(error);
         }
     },
@@ -152,7 +153,7 @@ module.exports = {
             const postId = req.params.id;
             const user = req.body.userData;
 
-            if (!postId) throw createError.NotFound('post not found');
+            if (!postId) throw createError.NotFound('Post not found');
 
             const post = await likePostService({
                 postId,
@@ -160,7 +161,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'you liked the post',
+                status: 'You liked the post',
                 newPost: post
             });
         } catch (error) {
@@ -196,7 +197,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'get posts discover successful',
+                status: 'get posts discover successfully',
                 posts
             });
         } catch (error) {
@@ -216,7 +217,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'post saved successfully',
+                status: 'post saved successfullyly',
                 updatedPost
             });
         } catch (error) {
@@ -236,7 +237,7 @@ module.exports = {
             });
 
             res.status(200).send({
-                status: 'post unsaved successfully',
+                status: 'post unsaved successfullyly',
                 updatedPost
             });
         } catch (error) {
