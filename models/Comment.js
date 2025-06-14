@@ -3,14 +3,13 @@ const { Schema } = require('mongoose');
 
 const CommentSchema = new Schema(
     {
-        originCommentId: {
-            type: Schema.Types.ObjectId
-        },
+        postId: Schema.Types.ObjectId,
+        parentCommentId: Schema.Types.ObjectId,
         user: {
             type: Schema.Types.ObjectId,
             ref: 'user'
         },
-        originalCommenter: {
+        userRef: {
             type: Schema.Types.ObjectId,
             ref: 'user'
         },
@@ -19,7 +18,7 @@ const CommentSchema = new Schema(
             required: true
         },
         likes: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-        reply: [{ type: Schema.Types.ObjectId, ref: 'comment' }]
+        numberOfChildComment: Number
     },
     {
         timestamps: true
@@ -31,14 +30,12 @@ CommentSchema.pre('findOneAndDelete', async function (next) {
         const Post = require('./Post');
         const commentId = this.getQuery()._id;
         const comment = await this.model.findById(commentId);
-        const reply = comment.reply;
+        const postId = comment.postId;
 
-        await Post.updateOne({ comments: commentId }, { $pull: { comments: commentId } });
-
-        if (reply.length > 0) {
-            await Comment.deleteMany({ _id: reply });
-        }
-
+        const result = await Comment.deleteMany({ parentCommentId: commentId });
+        await Post.findByIdAndUpdate(postId, {
+            $inc: { numberOfComment: -result.deletedCount }
+        });
         next();
     } catch (error) {
         next(error);

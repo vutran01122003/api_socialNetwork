@@ -9,6 +9,7 @@ module.exports = {
             .lean();
         return populatedPost;
     },
+
     getPostService: async ({ postId }) => {
         return Post.findOne({ _id: postId })
             .populate([
@@ -21,40 +22,6 @@ module.exports = {
                     path: 'likes',
                     model: 'user',
                     select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
                 }
             ])
             .lean();
@@ -74,45 +41,6 @@ module.exports = {
                         path: 'likes',
                         model: 'user',
                         select: 'username fullname avatar'
-                    },
-                    {
-                        path: 'comments',
-                        options: { sort: { createdAt: -1 }, limit: 2 },
-                        populate: [
-                            {
-                                path: 'user',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'likes',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'reply',
-                                model: 'comment',
-                                options: { sort: { createdAt: -1 }, limit: 2 },
-                                select: 'user content originalCommenter likes createdAt',
-                                populate: [
-                                    {
-                                        path: 'user',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    },
-                                    {
-                                        path: 'originalCommenter',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    },
-                                    {
-                                        path: 'likes',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    }
-                                ]
-                            }
-                        ]
                     }
                 ])
                 .lean(),
@@ -135,40 +63,6 @@ module.exports = {
                         path: 'likes',
                         model: 'user',
                         select: 'username fullname avatar'
-                    },
-                    {
-                        path: 'comments',
-                        options: { sort: { createdAt: -1 } },
-                        populate: [
-                            {
-                                path: 'user',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'likes',
-                                model: 'user',
-                                select: 'username fullname avatar'
-                            },
-                            {
-                                path: 'reply',
-                                model: 'comment',
-                                options: { sort: { createdAt: -1 } },
-                                select: 'user content likes createdAt',
-                                populate: [
-                                    {
-                                        path: 'user',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    },
-                                    {
-                                        path: 'likes',
-                                        model: 'user',
-                                        select: 'username fullname avatar'
-                                    }
-                                ]
-                            }
-                        ]
                     }
                 ])
                 .lean(),
@@ -180,7 +74,6 @@ module.exports = {
 
     getUserSavedPostsService: async ({ userId, queryUrl, limit }) => {
         const savedPosts = await queryDB(Post.find({ saved: userId }).sort({ createdAt: -1 }).lean(), queryUrl, limit);
-
         return savedPosts;
     },
 
@@ -198,40 +91,6 @@ module.exports = {
                     path: 'likes',
                     model: 'user',
                     select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
                 }
             ])
             .lean();
@@ -259,40 +118,6 @@ module.exports = {
                     path: 'likes',
                     model: 'user',
                     select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
                 }
             ])
             .lean();
@@ -316,40 +141,6 @@ module.exports = {
                     path: 'likes',
                     model: 'user',
                     select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
                 }
             ])
             .lean();
@@ -389,40 +180,6 @@ module.exports = {
                     path: 'likes',
                     model: 'user',
                     select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
                 }
             ])
             .lean();
@@ -448,207 +205,20 @@ module.exports = {
                     path: 'likes',
                     model: 'user',
                     select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
                 }
             ])
             .lean();
     },
 
-    findUpdatedPost: async (postId) => {
-        return Post.findById(postId)
-            .populate([
-                {
-                    path: 'user',
-                    model: 'user',
-                    select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'likes',
-                    model: 'user',
-                    select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ])
-            .lean();
+    increaseNumberOfCommentService: async ({ postId }) => {
+        await Post.findByIdAndUpdate(postId, {
+            $inc: { numberOfComment: 1 }
+        });
     },
 
-    getPostOfCreatedCommentService: async ({ postId, createdCommentId }) => {
-        return Post.findByIdAndUpdate(
-            postId,
-            {
-                $push: { comments: createdCommentId }
-            },
-            { new: true }
-        )
-            .populate([
-                {
-                    path: 'user',
-                    model: 'user',
-                    select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'likes',
-                    model: 'user',
-                    select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ])
-            .lean();
-    },
-
-    getPostOfDeletedCommentService: async ({ postId, deletedCommentId }) => {
-        return Post.findByIdAndUpdate(
-            postId,
-            {
-                $pull: { comments: deletedCommentId }
-            },
-            { new: true }
-        )
-            .populate([
-                {
-                    path: 'user',
-                    model: 'user',
-                    select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'likes',
-                    model: 'user',
-                    select: 'username fullname avatar followers'
-                },
-                {
-                    path: 'comments',
-                    options: { sort: { createdAt: -1 } },
-                    populate: [
-                        {
-                            path: 'user',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'likes',
-                            model: 'user',
-                            select: 'username fullname avatar'
-                        },
-                        {
-                            path: 'reply',
-                            model: 'comment',
-                            options: { sort: { createdAt: -1 } },
-                            select: 'user content likes createdAt',
-                            populate: [
-                                {
-                                    path: 'user',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                },
-                                {
-                                    path: 'likes',
-                                    model: 'user',
-                                    select: 'username fullname avatar'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ])
-            .lean();
+    decreaseNumberOfCommentService: async ({ postId }) => {
+        await Post.findByIdAndUpdate(postId, {
+            $inc: { numberOfComment: -1 }
+        });
     }
 };
