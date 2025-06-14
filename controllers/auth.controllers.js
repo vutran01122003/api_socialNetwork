@@ -24,20 +24,24 @@ module.exports = {
             const refreshToken = await jwtService.signRefreshToken(userCreated._id);
 
             res.status(200)
-                .cookie("accessToken", accessToken, {
-                    httpOnly: "true"
-                })
-                .cookie("refreshToken", refreshToken, {
-                    httpOnly: "true"
-                })
-                .send({
-                    status: "register success",
-                    user: userCreated,
-                    token: {
-                        accessToken,
-                        refreshToken
-                    }
-                });
+            .cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'None' 
+            })
+            .cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'None'
+            })
+            .send({
+                status: 'login success',
+                user,
+                token: {
+                    accessToken,
+                    refreshToken
+                }
+            });
         } catch (error) {
             next(error);
         }
